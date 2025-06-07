@@ -33,7 +33,7 @@ const AIChatScreen = () => {
       id: "1",
       content: t(
         "aiChat.welcome",
-        "Merhaba! Ben CodeMentor AI. C ve C++ hakkında her türlü sorunuzu cevaplayabilirim. Size nasıl yardımcı olabilirim?",
+        "Merhaba! Ben CodeMentor AI. C ve C++ hakk��nda her türlü sorunuzu cevaplayabilirim. Size nasıl yardımcı olabilirim?",
       ),
       sender: "ai",
       timestamp: new Date(),
@@ -399,7 +399,7 @@ const AIChatScreen = () => {
         <View style={styles.inputRow}>
           <TextInput
             style={styles.textInput}
-            placeholder="C ve C++ hakkında bir şey sorun..."
+            placeholder={t('aiChat.placeholder')}
             placeholderTextColor="#64748b"
             value={inputMessage}
             onChangeText={setInputMessage}
@@ -418,8 +418,7 @@ const AIChatScreen = () => {
           </TouchableOpacity>
         </View>
         <Text style={styles.disclaimer}>
-          AI yanıtları bilgilendirme amaçlıdır. Kritik projeler için doğrulama
-          yapın.
+          {t('aiChat.disclaimer', 'AI yanıtları bilgilendirme amaçlıdır. Kritik projeler için doğrulama yapın.')}
         </Text>
       </View>
     </KeyboardAvoidingView>
