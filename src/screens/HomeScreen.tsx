@@ -56,31 +56,31 @@ const HomeScreen = () => {
     },
     {
       id: 2,
-      title: "C++ ile Nesne Yönelimli Programlama",
-      description: "OOP kavramlarını C++ ile pratiğe dökün",
+      title: t("home.popularCourses.cppOop.title"),
+      description: t("home.popularCourses.cppOop.description"),
       students: 892,
       rating: 4.9,
       duration: "8 hafta",
-      level: "Orta",
+      level: t("userLevels.intermediate"),
       color: "#3b82f6",
     },
     {
       id: 3,
-      title: "Veri Yapıları ve Algoritmalar",
-      description: "C++ ile veri yapıları ve algoritma analizi",
+      title: t("home.popularCourses.dataStructures.title"),
+      description: t("home.popularCourses.dataStructures.description"),
       students: 634,
       rating: 4.7,
       duration: "10 hafta",
-      level: "İleri",
+      level: t("userLevels.advanced"),
       color: "#ef4444",
     },
   ];
 
   const stats = [
-    { label: "Toplam Öğrenci", value: "12,847", icon: "people" },
-    { label: "Kurslar", value: "25+", icon: "book" },
-    { label: "Alıştırmalar", value: "500+", icon: "code-slash" },
-    { label: "Başarı Oranı", value: "%95", icon: "trophy" },
+    { label: t("home.stats.users"), value: "12,847", icon: "people" },
+    { label: t("home.stats.courses"), value: "25+", icon: "book" },
+    { label: t("home.stats.exercises"), value: "500+", icon: "code-slash" },
+    { label: t("home.stats.successRate"), value: "%95", icon: "trophy" },
   ];
 
   return (
@@ -98,44 +98,49 @@ const HomeScreen = () => {
             >
               <Ionicons name="code-slash" size={32} color="white" />
             </LinearGradient>
-            <Text style={styles.logoText}>CodeMentor AI</Text>
+            <Text style={styles.logoText}>{t("home.title")}</Text>
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Ionicons name="notifications-outline" size={24} color="#f9fafb" />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <LanguageSwitch style={styles.languageSwitch} variant="icon" />
+            <TouchableOpacity style={styles.notificationButton}>
+              <Ionicons
+                name="notifications-outline"
+                size={24}
+                color="#f9fafb"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Hero Section */}
         <View style={styles.heroSection}>
-          <Text style={styles.heroTitle}>
-            C ve C++ Öğrenmenin{"\n"}
-            <Text style={styles.heroTitleGradient}>En Akıllı Yolu</Text>
-          </Text>
-          <Text style={styles.heroDescription}>
-            Yapay zeka destekli kişisel mentor'unuz ile programlama dillerini
-            öğrenin
-          </Text>
+          <Text style={styles.heroTitle}>{t("home.subtitle")}</Text>
+          <Text style={styles.heroDescription}>{t("home.description")}</Text>
 
           <View style={styles.heroButtons}>
             <TouchableOpacity
               style={styles.primaryButton}
-              onPress={() => navigation.navigate("Kurslar")}
+              onPress={() => navigation.navigate(t("navigation.courses"))}
             >
               <LinearGradient
                 colors={["#3b82f6", "#8b5cf6"]}
                 style={styles.buttonGradient}
               >
                 <Ionicons name="play" size={20} color="white" />
-                <Text style={styles.primaryButtonText}>Öğrenmeye Başla</Text>
+                <Text style={styles.primaryButtonText}>
+                  {t("home.getStarted")}
+                </Text>
               </LinearGradient>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.secondaryButton}
-              onPress={() => navigation.navigate("AI Chat")}
+              onPress={() => navigation.navigate(t("navigation.aiChat"))}
             >
               <Ionicons name="chatbubble-outline" size={20} color="#3b82f6" />
-              <Text style={styles.secondaryButtonText}>AI ile Tanış</Text>
+              <Text style={styles.secondaryButtonText}>
+                {t("home.watchDemo")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
