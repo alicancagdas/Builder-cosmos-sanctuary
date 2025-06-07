@@ -1,418 +1,355 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
+  FlatList,
   TextInput,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { Card, Chip, Button, ProgressBar } from "react-native-paper";
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withDelay,
-  interpolate,
-} from "react-native-reanimated";
-
-import AnimatedBackground from "../components/AnimatedBackground";
-import AnimatedCard from "../components/AnimatedCard";
-import AnimatedProgress from "../components/AnimatedProgress";
-import FloatingActionButton from "../components/FloatingActionButton";
-
-const { width } = Dimensions.get("window");
+import { useTranslation } from "react-i18next";
+import LanguageSwitch from "../components/common/LanguageSwitch";
 
 const CoursesScreen = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Animation values
-  const headerOpacity = useSharedValue(0);
-  const headerTranslateY = useSharedValue(-30);
-  const filterScale = useSharedValue(0.9);
-
-  useEffect(() => {
-    headerOpacity.value = withTiming(1, { duration: 600 });
-    headerTranslateY.value = withSpring(0, {
-      damping: 15,
-      stiffness: 100,
-    });
-
-    filterScale.value = withDelay(
-      200,
-      withSpring(1, {
-        damping: 12,
-        stiffness: 120,
-      }),
-    );
-  }, []);
-
-  const headerAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: headerOpacity.value,
-    transform: [{ translateY: headerTranslateY.value }],
-  }));
-
-  const filterAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: filterScale.value }],
-  }));
 
   const courses = [
     {
       id: 1,
       title: "C Programlama Temelleri",
       description:
-        "Sıfırdan başlayarak C programlama dilini öğrenin. Değişkenler, fonksiyonlar, döngüler ve temel veri yapıları.",
+        "Sıfırdan başlayarak C programlama dilini öğrenin. Değişkenler, fonksiyonlar, döngüler ve daha fazlası.",
+      instructor: "Dr. Ahmet Yılmaz",
+      duration: "6 hafta",
       level: "Başlangıç",
       language: "C",
-      duration: "8 hafta",
       students: 1247,
       rating: 4.8,
-      progress: 65,
+      reviews: 324,
       price: "Ücretsiz",
-      instructor: "Dr. Ahmet Yılmaz",
-      lessons: 24,
-      gradient: ["#3b82f6", "#1d4ed8"],
-      tags: ["Temel", "Syntax", "Algoritma"],
+      progress: 0,
+      isEnrolled: false,
+      chapters: 12,
+      totalLessons: 48,
+      tags: ["Basics", "Variables", "Functions"],
+      color: "#10b981",
     },
     {
       id: 2,
-      title: "C++ Nesne Yönelimli Programlama",
+      title: "C++ ile Nesne Yönelimli Programlama",
       description:
-        "Modern C++ ile ileri seviye programlama teknikleri. Sınıflar, kalıtım, polimorfizm ve STL kullanımı.",
+        "OOP kavramlarını C++ ile pratiğe dökün. Sınıflar, kalıtım, polimorfizm ve encapsulation.",
+      instructor: "Prof. Elif Kara",
+      duration: "8 hafta",
       level: "Orta",
       language: "C++",
-      duration: "12 hafta",
       students: 892,
       rating: 4.9,
-      progress: 45,
-      price: "₺149",
-      instructor: "Prof. Elif Kaya",
-      lessons: 36,
-      gradient: ["#8b5cf6", "#7c3aed"],
-      tags: ["OOP", "STL", "Modern C++"],
+      reviews: 267,
+      price: "₺299",
+      progress: 35,
+      isEnrolled: true,
+      chapters: 15,
+      totalLessons: 62,
+      tags: ["OOP", "Classes", "Inheritance"],
+      color: "#3b82f6",
     },
     {
       id: 3,
       title: "Veri Yapıları ve Algoritmalar",
       description:
-        "Temel veri yapıları ve algoritma analizi. Karmaşıklık hesapları, sıralama ve arama algoritmaları.",
+        "C++ ile veri yapıları ve algoritma analizi. Linked List, Stack, Queue, Trees ve Graph algoritmaları.",
+      instructor: "Dr. Mehmet Demir",
+      duration: "10 hafta",
       level: "İleri",
       language: "C++",
-      duration: "10 hafta",
       students: 634,
       rating: 4.7,
-      progress: 30,
-      price: "₺199",
-      instructor: "Dr. Mehmet Öz",
-      lessons: 42,
-      gradient: ["#06b6d4", "#0891b2"],
-      tags: ["Algoritma", "Big-O", "Optimizasyon"],
+      reviews: 189,
+      price: "₺499",
+      progress: 0,
+      isEnrolled: false,
+      chapters: 20,
+      totalLessons: 85,
+      tags: ["Data Structures", "Algorithms", "Trees"],
+      color: "#ef4444",
     },
     {
       id: 4,
-      title: "C ile Sistem Programlama",
+      title: "C++ STL ve Modern C++",
       description:
-        "Düşük seviye programlama ve sistem çağrıları. Bellek yönetimi, dosya işlemleri ve işletim sistemi arayüzü.",
+        "Standard Template Library kullanımı ve C++11/14/17/20 modern özellikler.",
+      instructor: "Mühendis Ayşe Çelik",
+      duration: "6 hafta",
       level: "İleri",
-      language: "C",
-      duration: "14 hafta",
+      language: "C++",
       students: 456,
       rating: 4.6,
-      progress: 0,
-      price: "₺249",
-      instructor: "Dr. Zeynep Demir",
-      lessons: 48,
-      gradient: ["#10b981", "#059669"],
-      tags: ["Sistem", "Bellek", "POSIX"],
-    },
-    {
-      id: 5,
-      title: "C++ Game Development",
-      description:
-        "C++ ile oyun geliştirme temelleri. SDL2, OpenGL ve oyun motoru mimarisi konularını öğrenin.",
-      level: "Orta",
-      language: "C++",
-      duration: "16 hafta",
-      students: 723,
-      rating: 4.8,
-      progress: 0,
-      price: "₺299",
-      instructor: "Görkem Arslan",
-      lessons: 52,
-      gradient: ["#f59e0b", "#d97706"],
-      tags: ["Oyun", "SDL2", "OpenGL"],
-    },
-    {
-      id: 6,
-      title: "Mikrodenetleyici Programlama",
-      description:
-        "Arduino ve STM32 ile gömülü sistem programlama. Sensörler, motorlar ve IoT uygulamaları.",
-      level: "Orta",
-      language: "C",
-      duration: "6 hafta",
-      students: 389,
-      rating: 4.5,
-      progress: 0,
-      price: "₺179",
-      instructor: "Mühendis Ali Veli",
-      lessons: 28,
-      gradient: ["#ef4444", "#dc2626"],
-      tags: ["Arduino", "IoT", "Embedded"],
+      reviews: 123,
+      price: "₺399",
+      progress: 80,
+      isEnrolled: true,
+      chapters: 12,
+      totalLessons: 45,
+      tags: ["STL", "Modern C++", "Templates"],
+      color: "#8b5cf6",
     },
   ];
 
-  const levels = [
-    { key: "all", label: "Tümü", color: "#6b7280" },
-    { key: "Başlangıç", label: "Başlangıç", color: "#10b981" },
-    { key: "Orta", label: "Orta", color: "#f59e0b" },
-    { key: "İleri", label: "İleri", color: "#ef4444" },
-  ];
-
-  const languages = [
-    { key: "all", label: "Tümü", color: "#6b7280" },
-    { key: "C", label: "C", color: "#3b82f6" },
-    { key: "C++", label: "C++", color: "#8b5cf6" },
-  ];
+  const levels = ["all", "Başlangıç", "Orta", "İleri"];
+  const languages = ["all", "C", "C++"];
 
   const filteredCourses = courses.filter((course) => {
+    const matchesSearch =
+      course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesLevel =
       selectedLevel === "all" || course.level === selectedLevel;
     const matchesLanguage =
       selectedLanguage === "all" || course.language === selectedLanguage;
-    const matchesSearch =
-      searchQuery === "" ||
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.tags.some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
 
-    return matchesLevel && matchesLanguage && matchesSearch;
+    return matchesSearch && matchesLevel && matchesLanguage;
   });
 
-  const renderFilterChip = (items, selectedItem, onSelect) => (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.filterScrollContent}
+  const getLevelColor = (level: string) => {
+    switch (level) {
+      case "Başlangıç":
+        return "#10b981";
+      case "Orta":
+        return "#3b82f6";
+      case "İleri":
+        return "#ef4444";
+      default:
+        return "#64748b";
+    }
+  };
+
+  const renderCourseCard = ({ item: course }: any) => (
+    <TouchableOpacity
+      onPress={() =>
+        navigation.navigate("CourseDetail", { courseId: course.id })
+      }
+      style={styles.courseCardContainer}
     >
-      {items.map((item, index) => (
-        <TouchableOpacity
-          key={item.key}
-          onPress={() => onSelect(item.key)}
-          style={[
-            styles.filterChip,
-            selectedItem === item.key && styles.selectedFilterChip,
-          ]}
+      <Card style={styles.courseCard}>
+        <LinearGradient
+          colors={[course.color, `${course.color}80`]}
+          style={styles.courseHeader}
         >
-          {selectedItem === item.key && (
-            <LinearGradient
-              colors={[item.color, `${item.color}80`]}
-              style={styles.filterChipGradient}
-            />
-          )}
-          <Text
-            style={[
-              styles.filterChipText,
-              selectedItem === item.key && styles.selectedFilterChipText,
-            ]}
-          >
-            {item.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  );
-
-  const renderCourse = (course, index) => (
-    <AnimatedCard
-      key={course.id}
-      delay={index * 100}
-      gradientColors={[`${course.gradient[0]}15`, `${course.gradient[1]}08`]}
-      shadowColor={course.gradient[0]}
-      style={styles.courseCard}
-      onPress={() => navigation.navigate("CourseDetail", { course })}
-    >
-      {/* Course Header */}
-      <LinearGradient colors={course.gradient} style={styles.courseHeader}>
-        <View style={styles.courseHeaderTop}>
-          <View style={styles.courseBadges}>
-            <View style={styles.levelBadge}>
-              <Text style={styles.levelBadgeText}>{course.level}</Text>
-            </View>
-            <View style={styles.languageBadge}>
-              <Text style={styles.languageBadgeText}>{course.language}</Text>
-            </View>
+          <View style={styles.courseHeaderContent}>
+            <Ionicons name="code-slash" size={32} color="white" />
+            {course.isEnrolled && (
+              <View style={styles.enrolledBadge}>
+                <Ionicons name="checkmark-circle" size={16} color="white" />
+                <Text style={styles.enrolledText}>Kayıtlı</Text>
+              </View>
+            )}
           </View>
+        </LinearGradient>
 
-          <View style={styles.courseRating}>
-            <Ionicons name="star" size={14} color="#fbbf24" />
-            <Text style={styles.ratingText}>{course.rating}</Text>
-          </View>
-        </View>
-
-        <Text style={styles.courseTitle}>{course.title}</Text>
-        <Text style={styles.courseInstructor}>👨‍💻 {course.instructor}</Text>
-      </LinearGradient>
-
-      {/* Course Content */}
-      <View style={styles.courseContent}>
-        <Text style={styles.courseDescription}>{course.description}</Text>
-
-        {/* Tags */}
-        <View style={styles.tagsContainer}>
-          {course.tags.map((tag, tagIndex) => (
-            <View
-              key={tagIndex}
-              style={[styles.tag, { borderColor: course.gradient[0] }]}
-            >
-              <Text style={[styles.tagText, { color: course.gradient[0] }]}>
-                {tag}
-              </Text>
-            </View>
-          ))}
-        </View>
-
-        {/* Course Info */}
-        <View style={styles.courseInfoGrid}>
-          <View style={styles.infoItem}>
-            <Ionicons name="time-outline" size={16} color="#9ca3af" />
-            <Text style={styles.infoText}>{course.duration}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Ionicons name="book-outline" size={16} color="#9ca3af" />
-            <Text style={styles.infoText}>{course.lessons} ders</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Ionicons name="people-outline" size={16} color="#9ca3af" />
-            <Text style={styles.infoText}>{course.students}</Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Ionicons name="card-outline" size={16} color="#9ca3af" />
-            <Text
+        <Card.Content style={styles.courseContent}>
+          <View style={styles.courseMetaRow}>
+            <Chip
+              mode="outlined"
+              textStyle={[
+                styles.levelChipText,
+                { color: getLevelColor(course.level) },
+              ]}
               style={[
-                styles.infoText,
-                course.price === "Ücretsiz" && styles.freePrice,
+                styles.levelChip,
+                { borderColor: getLevelColor(course.level) },
               ]}
             >
-              {course.price}
-            </Text>
+              {course.level}
+            </Chip>
+            <View style={styles.ratingContainer}>
+              <Ionicons name="star" size={16} color="#fbbf24" />
+              <Text style={styles.ratingText}>{course.rating}</Text>
+              <Text style={styles.reviewsText}>({course.reviews})</Text>
+            </View>
           </View>
-        </View>
 
-        {/* Progress */}
-        {course.progress > 0 && (
-          <View style={styles.progressContainer}>
-            <AnimatedProgress
-              progress={course.progress}
-              label="İlerleme Durumu"
-              height={6}
-              colors={course.gradient}
-            />
+          <Text style={styles.courseTitle}>{course.title}</Text>
+          <Text style={styles.courseDescription} numberOfLines={2}>
+            {course.description}
+          </Text>
+
+          <View style={styles.courseStatsRow}>
+            <View style={styles.courseStat}>
+              <Ionicons name="time-outline" size={16} color="#64748b" />
+              <Text style={styles.courseStatText}>{course.duration}</Text>
+            </View>
+            <View style={styles.courseStat}>
+              <Ionicons name="people-outline" size={16} color="#64748b" />
+              <Text style={styles.courseStatText}>{course.students}</Text>
+            </View>
+            <View style={styles.courseStat}>
+              <Ionicons name="book-outline" size={16} color="#64748b" />
+              <Text style={styles.courseStatText}>
+                {course.totalLessons} ders
+              </Text>
+            </View>
           </View>
-        )}
 
-        {/* Action Button */}
-        <TouchableOpacity
-          style={styles.courseButton}
-          onPress={() => navigation.navigate("CourseDetail", { course })}
-        >
-          <LinearGradient
-            colors={course.gradient}
-            style={styles.courseButtonGradient}
-          >
-            <Text style={styles.courseButtonText}>
-              {course.progress > 0 ? "Devam Et" : "Kursa Başla"}
-            </Text>
-            <Ionicons
-              name={course.progress > 0 ? "play" : "arrow-forward"}
-              size={16}
-              color="white"
-            />
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-    </AnimatedCard>
+          {course.isEnrolled && course.progress > 0 && (
+            <View style={styles.progressContainer}>
+              <View style={styles.progressHeader}>
+                <Text style={styles.progressLabel}>İlerleme</Text>
+                <Text style={styles.progressPercentage}>
+                  {course.progress}%
+                </Text>
+              </View>
+              <ProgressBar
+                progress={course.progress / 100}
+                color="#3b82f6"
+                style={styles.progressBar}
+              />
+            </View>
+          )}
+
+          <View style={styles.tagsContainer}>
+            {course.tags.slice(0, 3).map((tag, index) => (
+              <Chip
+                key={index}
+                mode="outlined"
+                style={styles.tagChip}
+                textStyle={styles.tagText}
+              >
+                {tag}
+              </Chip>
+            ))}
+          </View>
+
+          <View style={styles.courseFooter}>
+            <Text style={styles.coursePrice}>{course.price}</Text>
+            <Button
+              mode={course.isEnrolled ? "outlined" : "contained"}
+              onPress={() =>
+                navigation.navigate("CourseDetail", { courseId: course.id })
+              }
+              style={styles.courseButton}
+              labelStyle={styles.courseButtonText}
+            >
+              {course.isEnrolled ? (
+                <>
+                  <Ionicons name="play" size={16} color="#3b82f6" />
+                  {" Devam Et"}
+                </>
+              ) : (
+                <>
+                  <Ionicons name="book-outline" size={16} color="white" />
+                  {" İncele"}
+                </>
+              )}
+            </Button>
+          </View>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
   );
 
   return (
     <View style={styles.container}>
-      <AnimatedBackground variant="courses" />
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Kurslar</Text>
+        <Text style={styles.headerSubtitle}>
+          C ve C++ programlama dillerini AI destekli kurslarla öğrenin
+        </Text>
+      </View>
 
-      <ScrollView
-        style={styles.scrollView}
+      {/* Search and Filters */}
+      <View style={styles.filtersContainer}>
+        <View style={styles.searchContainer}>
+          <Ionicons
+            name="search"
+            size={20}
+            color="#64748b"
+            style={styles.searchIcon}
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Kurs ara..."
+            placeholderTextColor="#64748b"
+            value={searchTerm}
+            onChangeText={setSearchTerm}
+          />
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.filterScrollView}
+        >
+          <Text style={styles.filterLabel}>Seviye:</Text>
+          {levels.map((level) => (
+            <TouchableOpacity
+              key={level}
+              onPress={() => setSelectedLevel(level)}
+              style={[
+                styles.filterChip,
+                selectedLevel === level && styles.activeFilterChip,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  selectedLevel === level && styles.activeFilterChipText,
+                ]}
+              >
+                {level === "all" ? "Tümü" : level}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+          <Text style={[styles.filterLabel, { marginLeft: 16 }]}>Dil:</Text>
+          {languages.map((language) => (
+            <TouchableOpacity
+              key={language}
+              onPress={() => setSelectedLanguage(language)}
+              style={[
+                styles.filterChip,
+                selectedLanguage === language && styles.activeFilterChip,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.filterChipText,
+                  selectedLanguage === language && styles.activeFilterChipText,
+                ]}
+              >
+                {language === "all" ? "Tümü" : language}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
+      {/* Courses List */}
+      <FlatList
+        data={filteredCourses}
+        renderItem={renderCourseCard}
+        keyExtractor={(item) => item.id.toString()}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Header */}
-        <Animated.View style={[styles.header, headerAnimatedStyle]}>
-          <Text style={styles.headerTitle}>Kurslar</Text>
-          <Text style={styles.headerSubtitle}>
-            C ve C++ programlama dillerinde uzmanlaş
-          </Text>
-        </Animated.View>
-
-        {/* Search */}
-        <Animated.View style={[styles.searchContainer, filterAnimatedStyle]}>
-          <View style={styles.searchInputContainer}>
-            <Ionicons name="search" size={20} color="#9ca3af" />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Kurs ara..."
-              placeholderTextColor="#9ca3af"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => setSearchQuery("")}>
-                <Ionicons name="close-circle" size={20} color="#9ca3af" />
-              </TouchableOpacity>
-            )}
+        contentContainerStyle={styles.coursesList}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Ionicons name="book-outline" size={64} color="#64748b" />
+            <Text style={styles.emptyTitle}>Kurs bulunamadı</Text>
+            <Text style={styles.emptyDescription}>
+              Arama kriterlerinizi değiştirerek tekrar deneyin
+            </Text>
           </View>
-        </Animated.View>
-
-        {/* Filters */}
-        <Animated.View style={[styles.filtersContainer, filterAnimatedStyle]}>
-          <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Seviye</Text>
-            {renderFilterChip(levels, selectedLevel, setSelectedLevel)}
-          </View>
-
-          <View style={styles.filterSection}>
-            <Text style={styles.filterLabel}>Dil</Text>
-            {renderFilterChip(languages, selectedLanguage, setSelectedLanguage)}
-          </View>
-        </Animated.View>
-
-        {/* Results Count */}
-        <View style={styles.resultsContainer}>
-          <Text style={styles.resultsText}>
-            {filteredCourses.length} kurs bulundu
-          </Text>
-        </View>
-
-        {/* Courses Grid */}
-        <View style={styles.coursesContainer}>
-          {filteredCourses.map((course, index) => renderCourse(course, index))}
-        </View>
-      </ScrollView>
-
-      {/* Floating Action Button */}
-      <FloatingActionButton
-        icon="filter"
-        onPress={() => {
-          setSelectedLevel("all");
-          setSelectedLanguage("all");
-          setSearchQuery("");
-        }}
-        colors={["#8b5cf6", "#7c3aed"]}
+        }
       />
     </View>
   );
@@ -423,148 +360,132 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#030712",
   },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 100,
-  },
   header: {
     paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 20,
+    paddingVertical: 24,
+    paddingTop: 40,
   },
   headerTitle: {
-    fontSize: 32,
-    fontWeight: "800",
-    color: "#ffffff",
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#f9fafb",
     marginBottom: 8,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: "#9ca3af",
+    color: "#64748b",
     lineHeight: 24,
   },
-  searchContainer: {
+  filtersContainer: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  searchInputContainer: {
+  searchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(17, 24, 39, 0.8)",
+    backgroundColor: "#0f172a",
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: "rgba(59, 130, 246, 0.2)",
-    gap: 12,
+    borderColor: "#334155",
+  },
+  searchIcon: {
+    marginRight: 12,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: "#ffffff",
+    color: "#f9fafb",
   },
-  filtersContainer: {
-    paddingHorizontal: 20,
-    gap: 16,
-    marginBottom: 20,
-  },
-  filterSection: {
-    gap: 8,
+  filterScrollView: {
+    flexDirection: "row",
   },
   filterLabel: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#e5e7eb",
-    marginLeft: 4,
-  },
-  filterScrollContent: {
-    paddingRight: 20,
-    gap: 8,
+    color: "#f9fafb",
+    alignSelf: "center",
+    marginRight: 8,
   },
   filterChip: {
+    backgroundColor: "#1e293b",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: "rgba(17, 24, 39, 0.8)",
+    marginRight: 8,
     borderWidth: 1,
-    borderColor: "rgba(75, 85, 99, 0.3)",
-    position: "relative",
-    overflow: "hidden",
+    borderColor: "#334155",
   },
-  selectedFilterChip: {
-    borderColor: "transparent",
-  },
-  filterChipGradient: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  activeFilterChip: {
+    backgroundColor: "#3b82f6",
+    borderColor: "#3b82f6",
   },
   filterChipText: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#9ca3af",
-    position: "relative",
-    zIndex: 1,
-  },
-  selectedFilterChipText: {
-    color: "white",
-  },
-  resultsContainer: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  resultsText: {
-    fontSize: 14,
-    color: "#9ca3af",
+    color: "#94a3b8",
     fontWeight: "500",
   },
-  coursesContainer: {
+  activeFilterChipText: {
+    color: "white",
+  },
+  coursesList: {
     paddingHorizontal: 20,
-    gap: 20,
+    paddingBottom: 20,
+  },
+  courseCardContainer: {
+    marginBottom: 20,
   },
   courseCard: {
+    backgroundColor: "#0f172a",
+    borderWidth: 1,
+    borderColor: "#334155",
     overflow: "hidden",
   },
   courseHeader: {
-    padding: 20,
-  },
-  courseHeaderTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    height: 120,
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    position: "relative",
   },
-  courseBadges: {
+  courseHeaderContent: {
+    alignItems: "center",
+  },
+  enrolledBadge: {
+    position: "absolute",
+    top: 12,
+    right: 12,
     flexDirection: "row",
-    gap: 8,
-  },
-  levelBadge: {
+    alignItems: "center",
     backgroundColor: "rgba(255, 255, 255, 0.2)",
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 12,
+    gap: 4,
   },
-  levelBadgeText: {
+  enrolledText: {
+    fontSize: 12,
+    color: "white",
+    fontWeight: "600",
+  },
+  courseContent: {
+    padding: 20,
+  },
+  courseMetaRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  levelChip: {
+    alignSelf: "flex-start",
+  },
+  levelChipText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "white",
   },
-  languageBadge: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  languageBadgeText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "white",
-  },
-  courseRating: {
+  ratingContainer: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
@@ -572,85 +493,106 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "white",
+    color: "#f9fafb",
+  },
+  reviewsText: {
+    fontSize: 14,
+    color: "#64748b",
   },
   courseTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#f9fafb",
     marginBottom: 8,
-    lineHeight: 28,
-  },
-  courseInstructor: {
-    fontSize: 14,
-    color: "rgba(255, 255, 255, 0.9)",
-    fontWeight: "500",
-  },
-  courseContent: {
-    padding: 20,
   },
   courseDescription: {
     fontSize: 14,
-    color: "#9ca3af",
-    lineHeight: 22,
+    color: "#64748b",
+    lineHeight: 20,
     marginBottom: 16,
+  },
+  courseStatsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  courseStat: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  courseStatText: {
+    fontSize: 12,
+    color: "#64748b",
+  },
+  progressContainer: {
+    marginBottom: 16,
+  },
+  progressHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  progressLabel: {
+    fontSize: 14,
+    color: "#94a3b8",
+  },
+  progressPercentage: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#f9fafb",
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#1e293b",
   },
   tagsContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
-    marginBottom: 16,
+    marginBottom: 20,
   },
-  tag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 1,
+  tagChip: {
+    backgroundColor: "transparent",
+    borderColor: "#334155",
   },
   tagText: {
     fontSize: 12,
-    fontWeight: "500",
+    color: "#94a3b8",
   },
-  courseInfoGrid: {
+  courseFooter: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
-    marginBottom: 16,
-  },
-  infoItem: {
-    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: 6,
-    flex: 1,
-    minWidth: "45%",
   },
-  infoText: {
-    fontSize: 12,
-    color: "#9ca3af",
-    fontWeight: "500",
-  },
-  freePrice: {
-    color: "#10b981",
-    fontWeight: "600",
-  },
-  progressContainer: {
-    marginBottom: 20,
+  coursePrice: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#f9fafb",
   },
   courseButton: {
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  courseButtonGradient: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    gap: 8,
+    borderRadius: 8,
   },
   courseButtonText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "white",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#f9fafb",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyDescription: {
+    fontSize: 14,
+    color: "#64748b",
+    textAlign: "center",
   },
 });
 
