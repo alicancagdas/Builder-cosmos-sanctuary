@@ -177,5 +177,17 @@
   "language": {
     "turkish": "Türkçe",
     "english": "English"
+  },
+  "aiChat": {
+    "welcome": "Merhaba! Ben CodeMentor AI. C ve C++ hakkında her türlü sorunuzu cevaplayabilirim. Size nasıl yardımcı olabilirim?",
+    "error": "Üzgünüm, şu anda yanıt veremiyorum. Lütfen daha sonra tekrar deneyin.",
+    "online": "Çevrimiçi",
+    "disclaimer": "AI yanıtları bilgilendirme amaçlıdır. Kritik projeler için doğrulama yapın.",
+    "quickActions": {
+      "explainCode": "Kod Açıkla",
+      "askQuestion": "Soru Sor",
+      "concept": "Kavram Öğren",
+      "debug": "Hata Bul"
+    }
   }
 }

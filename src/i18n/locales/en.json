@@ -177,5 +177,17 @@
   "language": {
     "turkish": "Türkçe",
     "english": "English"
+  },
+  "aiChat": {
+    "welcome": "Hello! I'm CodeMentor AI. I can answer any questions about C and C++. How can I help you?",
+    "error": "Sorry, I can't respond right now. Please try again later.",
+    "online": "Online",
+    "disclaimer": "AI responses are for informational purposes. Verify for critical projects.",
+    "quickActions": {
+      "explainCode": "Explain Code",
+      "askQuestion": "Ask Question",
+      "concept": "Learn Concept",
+      "debug": "Find Bug"
+    }
   }
 }
