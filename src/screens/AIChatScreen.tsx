@@ -76,58 +76,23 @@ const AIChatScreen = () => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [messages]);
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: inputMessage,
-      sender: 'user',
-      timestamp: new Date(),
-      type: 'text',
-    };
-
-    const currentInput = inputMessage;
-    setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsTyping(true);
-
-    try {
-      // Generate AI response using Ollama
-      const aiResponse = await generateAIResponse(currentInput);
-      setMessages(prev => [...prev, aiResponse]);
-    } catch (error) {
-      console.error('Failed to get AI response:', error);
-      const errorMessage: Message = {
-        id: Date.now().toString(),
-        content: 'Üzgünüm, şu anda yanıt veremiyorum. Lütfen daha sonra tekrar deneyin.',
-        sender: 'ai',
-        timestamp: new Date(),
-        type: 'text',
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setIsTyping(false);
-    }
-  };
-
   const generateAIResponse = async (userInput: string): Promise<Message> => {
     try {
       // Check if we're in web environment and have access to ollama
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         // Try to make direct API call to Ollama
-        const response = await fetch('http://localhost:11434/api/generate', {
-          method: 'POST',
+        const response = await fetch("http://localhost:11434/api/generate", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: 'llama3',
+            model: "llama3",
             prompt: `Sen bir C/C++ programlama eğitmenisin. Aşağıdaki soruya Türkçe olarak cevap ver: "${userInput}"`,
             stream: false,
             options: {
               temperature: 0.7,
-            }
+            },
           }),
         });
 
@@ -135,44 +100,85 @@ const AIChatScreen = () => {
           const data = await response.json();
           return {
             id: Date.now().toString(),
-            content: data.response || 'AI yanıtı alınamadı.',
-            sender: 'ai',
+            content: data.response || "AI yanıtı alınamadı.",
+            sender: "ai",
             timestamp: new Date(),
-            type: userInput.includes('kod') || userInput.includes('```') ? 'code' : 'text',
+            type:
+              userInput.includes("kod") || userInput.includes("```")
+                ? "code"
+                : "text",
           };
         }
       }
 
       // Fallback response
-      throw new Error('API not available');
+      throw new Error("API not available");
     } catch (error) {
-      console.error('AI response error:', error);
+      console.error("AI response error:", error);
 
       // Mock response for demo
       const mockResponses = {
-        pointer: 'C++ dilinde pointer, bir değişkenin bellek adresini saklayan özel değişkendir.\n\nint x = 10;\nint* ptr = &x;  // ptr, x\'in adresini saklar\n\n*ptr ile değere erişebilirsiniz.',
-        class: 'C++ dilinde class, nesne yönelimli programlamanın temel yapı taşıdır.\n\nclass MyClass {\nprivate:\n    int value;\npublic:\n    void setValue(int v) { value = v; }\n};',
-        default: 'Bu konuda size yardımcı olmak için Ollama AI servisinin çalışıyor olması gerekiyor. Docker Compose ile Ollama\'yı başlattığınızdan emin olun.'
+        pointer:
+          "C++ dilinde pointer, bir değişkenin bellek adresini saklayan özel değişkendir.\n\nint x = 10;\nint* ptr = &x;  // ptr, x'in adresini saklar\n\n*ptr ile değere erişebilirsiniz.",
+        class:
+          "C++ dilinde class, nesne yönelimli programlamanın temel yapı taşıdır.\n\nclass MyClass {\nprivate:\n    int value;\npublic:\n    void setValue(int v) { value = v; }\n};",
+        default:
+          "Bu konuda size yardımcı olmak için Ollama AI servisinin çalışıyor olması gerekiyor. Docker Compose ile Ollama'yı başlattığınızdan emin olun.",
       };
 
       const input = userInput.toLowerCase();
       let mockContent = mockResponses.default;
 
-      if (input.includes('pointer') || input.includes('işaretçi')) {
+      if (input.includes("pointer") || input.includes("işaretçi")) {
         mockContent = mockResponses.pointer;
-      } else if (input.includes('class') || input.includes('sınıf')) {
+      } else if (input.includes("class") || input.includes("sınıf")) {
         mockContent = mockResponses.class;
       }
 
       return {
         id: Date.now().toString(),
         content: mockContent,
-        sender: 'ai',
+        sender: "ai",
         timestamp: new Date(),
-        type: 'text',
+        type: "text",
       };
     }
   };
+
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim()) return;
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: inputMessage,
+      sender: "user",
+      timestamp: new Date(),
+      type: "text",
+    };
+
+    const currentInput = inputMessage;
+    setMessages((prev) => [...prev, userMessage]);
+    setInputMessage("");
+    setIsTyping(true);
+
+    try {
+      // Generate AI response using Ollama
+      const aiResponse = await generateAIResponse(currentInput);
+      setMessages((prev) => [...prev, aiResponse]);
+    } catch (error) {
+      console.error("Failed to get AI response:", error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content:
+          "Üzgünüm, şu anda yanıt veremiyorum. Lütfen daha sonra tekrar deneyin.",
+        sender: "ai",
+        timestamp: new Date(),
+        type: "text",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   const handleQuestionClick = (question: string) => {
@@ -190,12 +196,9 @@ const AIChatScreen = () => {
         ]}
       >
         {!isUser && (
-          <Avatar.Icon
-            size={32}
-            icon="robot"
-            style={styles.aiAvatar}
-          />
+          <Avatar.Icon size={32} icon="robot" style={styles.aiAvatar} />
         )}
+
         <View
           style={[
             styles.messageBubble,
