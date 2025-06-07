@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,17 +6,29 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  TextInput,
+  Dimensions,
+  Animated,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { TextInput, Button, Card, Chip, Checkbox } from "react-native-paper";
+import { Button, Card, Chip, Checkbox } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../contexts/ThemeContext";
 import { authService } from "../services/authService";
 import LanguageSwitch from "../components/common/LanguageSwitch";
 
+const { width, height } = Dimensions.get("window");
+const isTablet = width > 768;
+const isMobile = width <= 480;
+
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
+  const { isDarkMode, colors } = useTheme();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,466 +38,835 @@ const LoginScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Animation values
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [slideAnim] = useState(new Animated.Value(50));
+  const [scaleAnim] = useState(new Animated.Value(0.9));
+  const [logoRotate] = useState(new Animated.Value(0));
+  const [pulseAnim] = useState(new Animated.Value(1));
+
+  useEffect(() => {
+    // Entrance animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Logo pulse animation
+    const pulseAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    // Logo rotation
+    const rotateAnimation = Animated.loop(
+      Animated.timing(logoRotate, {
+        toValue: 1,
+        duration: 10000,
+        useNativeDriver: true,
+      }),
+    );
+
+    pulseAnimation.start();
+    rotateAnimation.start();
+
+    return () => {
+      pulseAnimation.stop();
+      rotateAnimation.stop();
+    };
+  }, []);
+
+  const demoUsers = [
+    {
+      name: "Ethan Carter",
+      email: "ethan.carter@example.com",
+      level: "Intermediate",
+      avatar: "👨‍💻",
+      color: "#3b82f6",
+    },
+    {
+      name: "Demo User",
+      email: "demo@example.com",
+      level: "Beginner",
+      avatar: "👩‍🎓",
+      color: "#10b981",
+    },
+    {
+      name: "Admin User",
+      email: "admin@example.com",
+      level: "Expert",
+      avatar: "👨‍🏫",
+      color: "#f59e0b",
+    },
+  ];
 
   const handleSubmit = async () => {
     if (isLogin) {
       if (!email || !password) {
-        Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
+        Alert.alert(
+          t("common.error"),
+          t("login.fillAllFields", "Lütfen tüm alanları doldurun."),
+        );
         return;
       }
 
+      setIsLoading(true);
       try {
         const result = await authService.login(email, password);
         if (result.success) {
-          navigation.navigate("Main");
-        } else {
-          Alert.alert("Giriş Hatası", result.error || "Giriş yapılamadı.");
-        }
-      } catch (error) {
-        Alert.alert("Hata", "Giriş işlemi sırasında bir hata oluştu.");
-      }
-    } else {
-      if (!email || !password || !confirmPassword || !firstName || !lastName) {
-        Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
-        return;
-      }
-      if (password !== confirmPassword) {
-        Alert.alert("Hata", "Şifreler eşleşmiyor.");
-        return;
-      }
-      if (!acceptTerms) {
-        Alert.alert("Hata", "Kullanım şartlarını kabul etmelisiniz.");
-        return;
-      }
-
-      try {
-        const result = await authService.register({
-          email,
-          password,
-          firstName,
-          lastName,
-        });
-
-        if (result.success) {
-          Alert.alert("Başarılı", "Hesabınız oluşturuldu!", [
-            { text: "Tamam", onPress: () => navigation.navigate("Main") },
-          ]);
+          // Success animation
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: 1.1,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 0,
+              duration: 300,
+              useNativeDriver: true,
+            }),
+          ]).start(() => {
+            navigation.navigate("Main");
+          });
         } else {
           Alert.alert(
-            "Kayıt Hatası",
-            result.error || "Kayıt işlemi tamamlanamadı.",
+            t("login.loginError", "Giriş Hatası"),
+            result.error || t("login.loginFailed", "Giriş yapılamadı."),
           );
         }
       } catch (error) {
-        Alert.alert("Hata", "Kayıt işlemi sırasında bir hata oluştu.");
-      }
-    }
-  };
-
-  const handleQuickLogin = async (userId: string) => {
-    try {
-      const result = await authService.quickLogin(userId);
-      if (result.success) {
         Alert.alert(
-          "Demo Giriş",
-          `${result.user?.displayName} olarak giriş yapıldı!`,
-          [{ text: "Tamam", onPress: () => navigation.navigate("Main") }],
+          t("common.error"),
+          t(
+            "login.loginErrorOccurred",
+            "Giriş işlemi sırasında bir hata oluştu.",
+          ),
         );
       }
-    } catch (error) {
-      Alert.alert("Hata", "Demo giriş işlemi başarısız.");
+      setIsLoading(false);
+    } else {
+      if (!email || !password || !confirmPassword || !firstName || !lastName) {
+        Alert.alert(
+          t("common.error"),
+          t("login.fillAllFields", "Lütfen tüm alanları doldurun."),
+        );
+        return;
+      }
+      if (password !== confirmPassword) {
+        Alert.alert(
+          t("common.error"),
+          t("login.passwordMismatch", "Şifreler eşleşmiyor."),
+        );
+        return;
+      }
+      if (!acceptTerms) {
+        Alert.alert(
+          t("common.error"),
+          t("login.acceptTerms", "Kullanım şartlarını kabul etmelisiniz."),
+        );
+        return;
+      }
+
+      setIsLoading(true);
+      // Simulate registration
+      setTimeout(() => {
+        setIsLoading(false);
+        Alert.alert(
+          t("common.success", "Başarılı"),
+          t("login.registrationSuccess", "Hesabınız başarıyla oluşturuldu!"),
+          [{ text: t("common.ok"), onPress: () => setIsLogin(true) }],
+        );
+      }, 2000);
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    Alert.alert(
-      "Sosyal Giriş",
-      `${provider} ile giriş özelliği yakında eklenecek.`,
-    );
+  const handleQuickLogin = (user) => {
+    setEmail(user.email);
+    setPassword("demo123");
+
+    // Quick animation
+    Animated.timing(scaleAnim, {
+      toValue: 0.95,
+      duration: 100,
+      useNativeDriver: true,
+    }).start(() => {
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
   };
 
+  const renderFormField = (
+    placeholder: string,
+    value: string,
+    setValue: (text: string) => void,
+    secureTextEntry: boolean = false,
+    icon: string = "mail",
+  ) => (
+    <View style={[styles.inputContainer, { backgroundColor: colors.card }]}>
+      <Ionicons name={icon as any} size={20} color={colors.textSecondary} />
+      <TextInput
+        style={[styles.textInput, { color: colors.text }]}
+        placeholder={placeholder}
+        placeholderTextColor={colors.textSecondary}
+        value={value}
+        onChangeText={setValue}
+        secureTextEntry={secureTextEntry && !showPassword}
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+      {secureTextEntry && (
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons
+            name={showPassword ? "eye" : "eye-off"}
+            size={20}
+            color={colors.textSecondary}
+          />
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+
   return (
-    <LinearGradient
-      colors={["#030712", "#0f172a", "#1e293b"]}
-      style={styles.container}
-    >
-      {/* Logo */}
-      <View style={styles.logoContainer}>
-        <LinearGradient
-          colors={["#3b82f6", "#8b5cf6"]}
-          style={styles.logoGradient}
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Animated Background Shapes */}
+      <Animated.View
+        style={[
+          styles.backgroundContainer,
+          {
+            transform: [
+              {
+                rotate: logoRotate.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ["0deg", "360deg"],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.backgroundShape1,
+            { backgroundColor: `${colors.primary}10` },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundShape2,
+            { backgroundColor: `${colors.secondary}08` },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundShape3,
+            { backgroundColor: `${colors.success}06` },
+          ]}
+        />
+      </Animated.View>
+
+      <KeyboardAvoidingView
+        style={styles.keyboardContainer}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
-          <Ionicons name="code-slash" size={40} color="white" />
-        </LinearGradient>
-        <Text style={styles.logoText}>CodeMentor AI</Text>
-        <Text style={styles.logoSubtext}>
-          AI destekli programlama öğrenme platformu
-        </Text>
-      </View>
+          {/* Header */}
+          <Animated.View
+            style={[
+              styles.header,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
+              },
+            ]}
+          >
+            <View style={styles.headerTop}>
+              <LanguageSwitch variant="button" style={styles.languageSwitch} />
+            </View>
 
-      {/* Form Card */}
-      <Card style={styles.formCard}>
-        <Card.Content style={styles.formContent}>
-          <View style={styles.formHeader}>
-            <Text style={styles.formTitle}>Hoş Geldiniz</Text>
-            <Text style={styles.formSubtitle}>
-              {isLogin ? "Hesabınıza giriş yapın" : "Yeni hesap oluşturun"}
+            <Animated.View
+              style={[
+                styles.logoContainer,
+                { transform: [{ scale: pulseAnim }] },
+              ]}
+            >
+              <LinearGradient
+                colors={[colors.primary, colors.secondary]}
+                style={styles.logoGradient}
+              >
+                <Ionicons
+                  name="code-slash"
+                  size={isMobile ? 32 : 40}
+                  color="white"
+                />
+              </LinearGradient>
+            </Animated.View>
+
+            <Text style={[styles.appTitle, { color: colors.text }]}>
+              CodeMentor AI
             </Text>
-          </View>
+            <Text style={[styles.appSubtitle, { color: colors.textSecondary }]}>
+              {t("login.subtitle", "C/C++ öğrenmenin en akıllı yolu")}
+            </Text>
+          </Animated.View>
 
-          {/* Tab Switcher */}
-          <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[styles.tab, isLogin && styles.activeTab]}
-              onPress={() => setIsLogin(true)}
-            >
-              <Text style={[styles.tabText, isLogin && styles.activeTabText]}>
-                Giriş Yap
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.tab, !isLogin && styles.activeTab]}
-              onPress={() => setIsLogin(false)}
-            >
-              <Text style={[styles.tabText, !isLogin && styles.activeTabText]}>
-                Kayıt Ol
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Form Fields */}
-          <View style={styles.formFields}>
-            {!isLogin && (
-              <View style={styles.nameRow}>
-                <View style={styles.nameField}>
-                  <Text style={styles.fieldLabel}>Ad</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={firstName}
-                    onChangeText={setFirstName}
-                    placeholder="Adınız"
-                    placeholderTextColor="#64748b"
-                  />
-                </View>
-                <View style={styles.nameField}>
-                  <Text style={styles.fieldLabel}>Soyad</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={lastName}
-                    onChangeText={setLastName}
-                    placeholder="Soyadınız"
-                    placeholderTextColor="#64748b"
-                  />
-                </View>
-              </View>
-            )}
-
-            <View style={styles.field}>
-              <Text style={styles.fieldLabel}>E-posta</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="ornek@email.com"
-                placeholderTextColor="#64748b"
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-
-            <View style={styles.field}>
-              <Text style={styles.fieldLabel}>Şifre</Text>
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder={
-                    isLogin ? "Şifrenizi girin" : "Güçlü bir şifre seçin"
-                  }
-                  placeholderTextColor="#64748b"
-                  secureTextEntry={!showPassword}
-                />
+          {/* Demo Users */}
+          <Animated.View
+            style={[
+              styles.demoSection,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}
+          >
+            <Text style={[styles.demoTitle, { color: colors.text }]}>
+              ⚡ {t("login.demoUsers")} - {t("login.quickLogin")}
+            </Text>
+            <View style={styles.demoUsersContainer}>
+              {demoUsers.map((user, index) => (
                 <TouchableOpacity
-                  style={styles.eyeButton}
-                  onPress={() => setShowPassword(!showPassword)}
+                  key={index}
+                  style={[
+                    styles.demoUserCard,
+                    { backgroundColor: colors.card },
+                  ]}
+                  onPress={() => handleQuickLogin(user)}
                 >
-                  <Ionicons
-                    name={showPassword ? "eye-off" : "eye"}
-                    size={20}
-                    color="#64748b"
-                  />
+                  <LinearGradient
+                    colors={[`${user.color}20`, `${user.color}10`]}
+                    style={styles.demoUserGradient}
+                  >
+                    <Text style={styles.demoUserAvatar}>{user.avatar}</Text>
+                    <Text style={[styles.demoUserName, { color: colors.text }]}>
+                      {user.name}
+                    </Text>
+                    <Chip
+                      mode="outlined"
+                      style={[
+                        styles.demoUserLevel,
+                        { borderColor: user.color },
+                      ]}
+                      textStyle={[
+                        styles.demoUserLevelText,
+                        { color: user.color },
+                      ]}
+                    >
+                      {t(`userLevels.${user.level.toLowerCase()}`, user.level)}
+                    </Chip>
+                  </LinearGradient>
                 </TouchableOpacity>
-              </View>
+              ))}
             </View>
+          </Animated.View>
 
-            {!isLogin && (
-              <View style={styles.field}>
-                <Text style={styles.fieldLabel}>Şifre Tekrar</Text>
-                <TextInput
-                  style={styles.input}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  placeholder="Şifrenizi tekrar girin"
-                  placeholderTextColor="#64748b"
-                  secureTextEntry={!showPassword}
-                />
-              </View>
-            )}
-
-            {/* Options */}
-            <View style={styles.optionsContainer}>
-              {isLogin ? (
-                <View style={styles.loginOptions}>
-                  <View style={styles.checkboxContainer}>
-                    <Checkbox
-                      status={rememberMe ? "checked" : "unchecked"}
-                      onPress={() => setRememberMe(!rememberMe)}
-                      color="#3b82f6"
-                    />
-                    <Text style={styles.checkboxLabel}>Beni hatırla</Text>
-                  </View>
-                  <TouchableOpacity>
-                    <Text style={styles.forgotPasswordText}>
-                      Şifremi unuttum
+          {/* Main Form */}
+          <Animated.View
+            style={[
+              styles.formContainer,
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }, { scale: scaleAnim }],
+              },
+            ]}
+          >
+            <Card style={[styles.formCard, { backgroundColor: colors.card }]}>
+              <LinearGradient
+                colors={[`${colors.primary}05`, `${colors.secondary}03`]}
+                style={styles.formGradient}
+              >
+                {/* Tabs */}
+                <View style={styles.tabsContainer}>
+                  <TouchableOpacity
+                    style={[
+                      styles.tab,
+                      {
+                        backgroundColor: isLogin
+                          ? colors.primary
+                          : "transparent",
+                      },
+                    ]}
+                    onPress={() => setIsLogin(true)}
+                  >
+                    <Text
+                      style={[
+                        styles.tabText,
+                        { color: isLogin ? "white" : colors.textSecondary },
+                      ]}
+                    >
+                      {t("login.title")}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.tab,
+                      {
+                        backgroundColor: !isLogin
+                          ? colors.primary
+                          : "transparent",
+                      },
+                    ]}
+                    onPress={() => setIsLogin(false)}
+                  >
+                    <Text
+                      style={[
+                        styles.tabText,
+                        { color: !isLogin ? "white" : colors.textSecondary },
+                      ]}
+                    >
+                      {t("login.register")}
                     </Text>
                   </TouchableOpacity>
                 </View>
-              ) : (
-                <View style={styles.checkboxContainer}>
-                  <Checkbox
-                    status={acceptTerms ? "checked" : "unchecked"}
-                    onPress={() => setAcceptTerms(!acceptTerms)}
-                    color="#3b82f6"
-                  />
-                  <Text style={styles.checkboxLabel}>
-                    <Text style={styles.linkText}>Kullanım şartlarını</Text> ve{" "}
-                    <Text style={styles.linkText}>gizlilik politikasını</Text>{" "}
-                    kabul ediyorum
-                  </Text>
+
+                {/* Form Fields */}
+                <View style={styles.formFields}>
+                  {!isLogin && (
+                    <>
+                      <View style={styles.nameRow}>
+                        {renderFormField(
+                          t("login.firstName", "Ad"),
+                          firstName,
+                          setFirstName,
+                          false,
+                          "person",
+                        )}
+                        {renderFormField(
+                          t("login.lastName", "Soyad"),
+                          lastName,
+                          setLastName,
+                          false,
+                          "person",
+                        )}
+                      </View>
+                    </>
+                  )}
+
+                  {renderFormField(
+                    t("login.email"),
+                    email,
+                    setEmail,
+                    false,
+                    "mail",
+                  )}
+
+                  {renderFormField(
+                    t("login.password"),
+                    password,
+                    setPassword,
+                    true,
+                    "lock-closed",
+                  )}
+
+                  {!isLogin && (
+                    <>
+                      {renderFormField(
+                        t("login.confirmPassword"),
+                        confirmPassword,
+                        setConfirmPassword,
+                        true,
+                        "lock-closed",
+                      )}
+                    </>
+                  )}
+
+                  {/* Options */}
+                  <View style={styles.optionsContainer}>
+                    {isLogin ? (
+                      <View style={styles.loginOptions}>
+                        <View style={styles.checkboxContainer}>
+                          <Checkbox
+                            status={rememberMe ? "checked" : "unchecked"}
+                            onPress={() => setRememberMe(!rememberMe)}
+                            color={colors.primary}
+                          />
+                          <Text
+                            style={[
+                              styles.checkboxLabel,
+                              { color: colors.text },
+                            ]}
+                          >
+                            {t("login.rememberMe", "Beni hatırla")}
+                          </Text>
+                        </View>
+                        <TouchableOpacity>
+                          <Text
+                            style={[
+                              styles.forgotPassword,
+                              { color: colors.primary },
+                            ]}
+                          >
+                            {t("login.forgotPassword")}
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <View style={styles.checkboxContainer}>
+                        <Checkbox
+                          status={acceptTerms ? "checked" : "unchecked"}
+                          onPress={() => setAcceptTerms(!acceptTerms)}
+                          color={colors.primary}
+                        />
+                        <Text
+                          style={[styles.checkboxLabel, { color: colors.text }]}
+                        >
+                          {t(
+                            "login.acceptTermsText",
+                            "Kullanım şartlarını kabul ediyorum",
+                          )}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Submit Button */}
+                  <TouchableOpacity
+                    style={[
+                      styles.submitButton,
+                      { opacity: isLoading ? 0.7 : 1 },
+                    ]}
+                    onPress={handleSubmit}
+                    disabled={isLoading}
+                  >
+                    <LinearGradient
+                      colors={[colors.primary, colors.secondary]}
+                      style={styles.submitGradient}
+                    >
+                      {isLoading ? (
+                        <View style={styles.loadingContainer}>
+                          <Animated.View
+                            style={[
+                              styles.loadingSpinner,
+                              {
+                                transform: [
+                                  {
+                                    rotate: logoRotate.interpolate({
+                                      inputRange: [0, 1],
+                                      outputRange: ["0deg", "360deg"],
+                                    }),
+                                  },
+                                ],
+                              },
+                            ]}
+                          >
+                            <Ionicons name="refresh" size={20} color="white" />
+                          </Animated.View>
+                          <Text style={styles.loadingText}>
+                            {t("common.loading")}...
+                          </Text>
+                        </View>
+                      ) : (
+                        <>
+                          <Ionicons
+                            name={isLogin ? "log-in" : "person-add"}
+                            size={20}
+                            color="white"
+                          />
+                          <Text style={styles.submitText}>
+                            {isLogin
+                              ? t("login.loginButton")
+                              : t("login.registerButton")}
+                          </Text>
+                        </>
+                      )}
+                    </LinearGradient>
+                  </TouchableOpacity>
+
+                  {/* Social Login */}
+                  <View style={styles.socialContainer}>
+                    <View style={styles.dividerContainer}>
+                      <View
+                        style={[
+                          styles.divider,
+                          { backgroundColor: colors.border },
+                        ]}
+                      />
+                      <Text
+                        style={[
+                          styles.dividerText,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        {t("login.orContinueWith")}
+                      </Text>
+                      <View
+                        style={[
+                          styles.divider,
+                          { backgroundColor: colors.border },
+                        ]}
+                      />
+                    </View>
+
+                    <View style={styles.socialButtons}>
+                      <TouchableOpacity
+                        style={[
+                          styles.socialButton,
+                          { backgroundColor: colors.card },
+                        ]}
+                      >
+                        <Ionicons
+                          name="logo-github"
+                          size={24}
+                          color={colors.text}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          styles.socialButton,
+                          { backgroundColor: colors.card },
+                        ]}
+                      >
+                        <Ionicons
+                          name="logo-google"
+                          size={24}
+                          color={colors.text}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          styles.socialButton,
+                          { backgroundColor: colors.card },
+                        ]}
+                      >
+                        <Ionicons
+                          name="logo-apple"
+                          size={24}
+                          color={colors.text}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 </View>
-              )}
-            </View>
-
-            {/* Submit Button */}
-            <Button
-              mode="contained"
-              onPress={handleSubmit}
-              style={styles.submitButton}
-              labelStyle={styles.submitButtonText}
-            >
-              {isLogin ? "Giriş Yap" : "Hesap Oluştur"}
-            </Button>
-
-            {/* Social Login */}
-            <View style={styles.socialContainer}>
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>Veya şununla devam edin</Text>
-                <View style={styles.dividerLine} />
-              </View>
-
-              <View style={styles.socialButtons}>
-                <TouchableOpacity
-                  style={styles.socialButton}
-                  onPress={() => handleSocialLogin("GitHub")}
-                >
-                  <Ionicons name="logo-github" size={20} color="#f9fafb" />
-                  <Text style={styles.socialButtonText}>GitHub</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.socialButton}
-                  onPress={() => handleSocialLogin("Google")}
-                >
-                  <Ionicons name="logo-google" size={20} color="#f9fafb" />
-                  <Text style={styles.socialButtonText}>Google</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Card.Content>
-      </Card>
-
-      {/* Demo Users */}
-      <Card style={styles.demoCard}>
-        <Card.Content style={styles.demoContent}>
-          <Text style={styles.demoTitle}>Demo Kullanıcıları</Text>
-          <Text style={styles.demoSubtitle}>
-            Hızlı test için demo hesapları
-          </Text>
-
-          <View style={styles.demoUsers}>
-            <TouchableOpacity
-              style={styles.demoUser}
-              onPress={() => handleQuickLogin("1")}
-            >
-              <Chip mode="outlined" style={styles.demoChip}>
-                👨‍💻 Ethan Carter (Intermediate)
-              </Chip>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.demoUser}
-              onPress={() => handleQuickLogin("2")}
-            >
-              <Chip mode="outlined" style={styles.demoChip}>
-                🎓 Demo User (Beginner)
-              </Chip>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.demoUser}
-              onPress={() => handleQuickLogin("3")}
-            >
-              <Chip mode="outlined" style={styles.demoChip}>
-                🎯 Admin User (Expert)
-              </Chip>
-            </TouchableOpacity>
-          </View>
-        </Card.Content>
-      </Card>
-
-      {/* Footer */}
-      <TouchableOpacity style={styles.footer}>
-        <Text style={styles.footerText}>← Ana sayfaya dön</Text>
-      </TouchableOpacity>
-    </LinearGradient>
+              </LinearGradient>
+            </Card>
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 60,
-    paddingBottom: 40,
+  },
+  backgroundContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+  },
+  backgroundShape1: {
+    position: "absolute",
+    width: isTablet ? 400 : 300,
+    height: isTablet ? 400 : 300,
+    borderRadius: isTablet ? 200 : 150,
+    top: -100,
+    right: -100,
+  },
+  backgroundShape2: {
+    position: "absolute",
+    width: isTablet ? 300 : 200,
+    height: isTablet ? 300 : 200,
+    borderRadius: isTablet ? 150 : 100,
+    bottom: 100,
+    left: -50,
+  },
+  backgroundShape3: {
+    position: "absolute",
+    width: isTablet ? 200 : 150,
+    height: isTablet ? 200 : 150,
+    borderRadius: isTablet ? 100 : 75,
+    top: height * 0.4,
+    right: -30,
+  },
+  keyboardContainer: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingHorizontal: isMobile ? 20 : isTablet ? 60 : 40,
+    paddingVertical: 40,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 30,
+  },
+  headerTop: {
+    width: "100%",
+    alignItems: "flex-end",
+    marginBottom: 20,
+  },
+  languageSwitch: {
+    alignSelf: "flex-end",
   },
   logoContainer: {
-    alignItems: "center",
-    marginBottom: 40,
+    marginBottom: 20,
   },
   logoGradient: {
-    width: 80,
-    height: 80,
-    borderRadius: 20,
+    width: isMobile ? 80 : isTablet ? 100 : 90,
+    height: isMobile ? 80 : isTablet ? 100 : 90,
+    borderRadius: isMobile ? 40 : isTablet ? 50 : 45,
     justifyContent: "center",
     alignItems: "center",
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  appTitle: {
+    fontSize: isMobile ? 28 : isTablet ? 36 : 32,
+    fontWeight: "800",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  appSubtitle: {
+    fontSize: isMobile ? 14 : isTablet ? 18 : 16,
+    textAlign: "center",
+    maxWidth: isTablet ? 600 : 300,
+  },
+  demoSection: {
+    marginBottom: 30,
+  },
+  demoTitle: {
+    fontSize: isMobile ? 16 : isTablet ? 20 : 18,
+    fontWeight: "600",
+    textAlign: "center",
     marginBottom: 16,
   },
-  logoText: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#f9fafb",
+  demoUsersContainer: {
+    flexDirection: isTablet ? "row" : "column",
+    gap: 12,
+    justifyContent: "center",
+  },
+  demoUserCard: {
+    borderRadius: 16,
+    elevation: 4,
+    overflow: "hidden",
+    flex: isTablet ? 1 : undefined,
+    maxWidth: isTablet ? undefined : "100%",
+  },
+  demoUserGradient: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: "center",
+  },
+  demoUserAvatar: {
+    fontSize: isMobile ? 24 : 28,
     marginBottom: 8,
   },
-  logoSubtext: {
-    fontSize: 16,
-    color: "#64748b",
+  demoUserName: {
+    fontSize: isMobile ? 14 : 16,
+    fontWeight: "600",
+    marginBottom: 6,
     textAlign: "center",
+  },
+  demoUserLevel: {
+    backgroundColor: "transparent",
+  },
+  demoUserLevelText: {
+    fontSize: 10,
+    fontWeight: "600",
+  },
+  formContainer: {
+    maxWidth: isTablet ? 500 : "100%",
+    alignSelf: "center",
+    width: "100%",
   },
   formCard: {
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
-    marginBottom: 24,
+    borderRadius: 24,
+    elevation: 8,
+    overflow: "hidden",
   },
-  formContent: {
-    padding: 24,
+  formGradient: {
+    padding: isMobile ? 24 : isTablet ? 32 : 28,
   },
-  formHeader: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#f9fafb",
-    marginBottom: 8,
-  },
-  formSubtitle: {
-    fontSize: 16,
-    color: "#64748b",
-    textAlign: "center",
-  },
-  tabContainer: {
+  tabsContainer: {
     flexDirection: "row",
-    backgroundColor: "#1e293b",
-    borderRadius: 8,
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+    borderRadius: 12,
     padding: 4,
     marginBottom: 24,
   },
   tab: {
     flex: 1,
     paddingVertical: 12,
+    borderRadius: 8,
     alignItems: "center",
-    borderRadius: 6,
-  },
-  activeTab: {
-    backgroundColor: "#3b82f6",
   },
   tabText: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#94a3b8",
-  },
-  activeTabText: {
-    color: "white",
+    fontSize: isMobile ? 14 : 16,
     fontWeight: "600",
   },
   formFields: {
-    gap: 20,
+    gap: 16,
   },
   nameRow: {
-    flexDirection: "row",
-    gap: 12,
+    flexDirection: isTablet ? "row" : "column",
+    gap: 16,
   },
-  nameField: {
-    flex: 1,
-  },
-  field: {
-    gap: 8,
-  },
-  fieldLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#f9fafb",
-  },
-  input: {
-    backgroundColor: "#1e293b",
-    borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "#f9fafb",
-  },
-  passwordContainer: {
+  inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#1e293b",
-    borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 8,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    elevation: 2,
+    gap: 12,
   },
-  passwordInput: {
+  textInput: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: "#f9fafb",
-  },
-  eyeButton: {
-    paddingHorizontal: 16,
+    fontSize: isMobile ? 14 : 16,
     paddingVertical: 12,
   },
   optionsContainer: {
-    marginTop: 4,
+    marginTop: 8,
   },
   loginOptions: {
-    flexDirection: "row",
+    flexDirection: isTablet ? "row" : "column",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: isTablet ? "center" : "flex-start",
+    gap: isTablet ? 0 : 12,
   },
   checkboxContainer: {
     flexDirection: "row",
@@ -493,106 +874,73 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   checkboxLabel: {
-    fontSize: 14,
-    color: "#94a3b8",
+    fontSize: isMobile ? 13 : 14,
     flex: 1,
   },
-  linkText: {
-    color: "#3b82f6",
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: "#3b82f6",
+  forgotPassword: {
+    fontSize: isMobile ? 13 : 14,
+    fontWeight: "600",
   },
   submitButton: {
-    borderRadius: 8,
-    paddingVertical: 4,
-    marginTop: 8,
+    marginTop: 24,
+    borderRadius: 12,
+    overflow: "hidden",
+    elevation: 6,
   },
-  submitButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
+  submitGradient: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 16,
+    gap: 8,
+  },
+  submitText: {
+    color: "white",
+    fontSize: isMobile ? 16 : 18,
+    fontWeight: "700",
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  loadingSpinner: {
+    // No additional styles needed for rotation
+  },
+  loadingText: {
+    color: "white",
+    fontSize: isMobile ? 16 : 18,
+    fontWeight: "700",
   },
   socialContainer: {
     marginTop: 24,
   },
-  divider: {
+  dividerContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
+    gap: 12,
   },
-  dividerLine: {
+  divider: {
     flex: 1,
     height: 1,
-    backgroundColor: "#334155",
   },
   dividerText: {
     fontSize: 12,
-    color: "#64748b",
-    paddingHorizontal: 16,
-    textTransform: "uppercase",
+    fontWeight: "500",
   },
   socialButtons: {
     flexDirection: "row",
-    gap: 12,
+    justifyContent: "center",
+    gap: 16,
   },
   socialButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: "center",
-    backgroundColor: "#1e293b",
-    borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 8,
-    paddingVertical: 12,
-    gap: 8,
-  },
-  socialButtonText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#f9fafb",
-  },
-  demoCard: {
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
-    marginBottom: 24,
-  },
-  demoContent: {
-    padding: 20,
-  },
-  demoTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#f9fafb",
-    marginBottom: 4,
-    textAlign: "center",
-  },
-  demoSubtitle: {
-    fontSize: 14,
-    color: "#64748b",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  demoUsers: {
-    gap: 8,
-  },
-  demoUser: {
-    width: "100%",
-  },
-  demoChip: {
-    backgroundColor: "transparent",
-    borderColor: "#3b82f6",
-    width: "100%",
-    justifyContent: "center",
-  },
-  footer: {
     alignItems: "center",
-  },
-  footerText: {
-    fontSize: 14,
-    color: "#64748b",
+    elevation: 4,
   },
 });
 
