@@ -1,0 +1,27 @@
+FROM node:18-alpine
+
+# Install required packages
+RUN apk add --no-cache git
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY babel.config.js ./
+COPY tsconfig.json ./
+
+# Install dependencies
+RUN npm install
+
+# Install Expo CLI
+RUN npm install -g @expo/cli
+
+# Copy source code
+COPY . .
+
+# Expose ports for Expo
+EXPOSE 19000 19006
+
+# Start Expo development server
+CMD ["npx", "expo", "start", "--web", "--host", "0.0.0.0"]

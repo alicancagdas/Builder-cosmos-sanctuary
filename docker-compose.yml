@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  # Ollama AI Service
+  ollama:
+    image: ollama/ollama:latest
+    container_name: codementor-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    restart: unless-stopped
+    command: |
+      sh -c "
+        ollama serve &
+        sleep 10 &&
+        ollama pull llama3 &&
+        wait
+      "
+
+  # React Native Web App
+  app:
+    build: .
+    container_name: codementor-app
+    ports:
+      - "3000:80"
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_API_URL=http://ollama:11434
+    restart: unless-stopped
+
+  # Development service (alternative)
+  app-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: codementor-dev
+    ports:
+      - "19006:19006" # Expo web port
+      - "19000:19000" # Expo dev server
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - ollama
+    environment:
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+      - OLLAMA_API_URL=http://ollama:11434
+    command: npx expo start --web --host 0.0.0.0
+
+volumes:
+  ollama_data:
