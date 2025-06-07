@@ -22,7 +22,9 @@ services:
 
   # React Native Web App
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: codementor-app
     ports:
       - "3000:80"
