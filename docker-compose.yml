@@ -12,13 +12,6 @@ services:
     environment:
       - OLLAMA_HOST=0.0.0.0
     restart: unless-stopped
-    command: |
-      sh -c "
-        ollama serve &
-        sleep 10 &&
-        ollama pull llama3 &&
-        wait
-      "
 
   # React Native Web App
   app:
