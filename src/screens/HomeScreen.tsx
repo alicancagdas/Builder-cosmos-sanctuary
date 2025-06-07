@@ -302,6 +302,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  languageSwitch: {
+    marginRight: 8,
+  },
   logoContainer: {
     flexDirection: "row",
     alignItems: "center",
