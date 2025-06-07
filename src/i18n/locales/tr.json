@@ -28,6 +28,8 @@
       "successRate": "Başarı Oranı"
     },
     "features": {
+      "title": "Neden CodeMentor AI?",
+      "description": "Modern teknoloji ile geleneksel öğrenme yöntemlerini birleştirerek size en iyi deneyimi sunuyoruz",
       "aiLearning": {
         "title": "AI Destekli Öğrenme",
         "description": "Yapay zeka ile kişiselleştirilmiş öğrenme deneyimi"

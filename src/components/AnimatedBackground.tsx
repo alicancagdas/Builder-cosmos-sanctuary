@@ -7,7 +7,6 @@ import Animated, {
   withTiming,
   withSequence,
   interpolate,
-  Easing,
 } from "react-native-reanimated";
 import Svg, { Circle, Path, Polygon, Ellipse } from "react-native-svg";
 import { LinearGradient } from "expo-linear-gradient";
@@ -27,16 +26,17 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
   const floatY = useSharedValue(0);
 
   useEffect(() => {
+    // Simple animations without complex easing
     rotation.value = withRepeat(
-      withTiming(360, { duration: 20000, easing: Easing.linear }),
+      withTiming(360, { duration: 20000 }),
       -1,
       false,
     );
 
     scale.value = withRepeat(
       withSequence(
-        withTiming(1.2, { duration: 3000, easing: Easing.inOut(Easing.quad) }),
-        withTiming(0.8, { duration: 3000, easing: Easing.inOut(Easing.quad) }),
+        withTiming(1.2, { duration: 3000 }),
+        withTiming(0.8, { duration: 3000 }),
       ),
       -1,
       true,
@@ -53,100 +53,112 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
 
     floatY.value = withRepeat(
       withSequence(
-        withTiming(-30, { duration: 4000, easing: Easing.inOut(Easing.sine) }),
-        withTiming(30, { duration: 4000, easing: Easing.inOut(Easing.sine) }),
+        withTiming(-20, { duration: 4000 }),
+        withTiming(20, { duration: 4000 }),
       ),
       -1,
       true,
     );
   }, []);
 
-  const animatedStyle1 = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }, { scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
-  const animatedStyle2 = useAnimatedStyle(() => ({
-    transform: [
-      { rotate: `${-rotation.value * 0.5}deg` },
-      { scale: interpolate(scale.value, [0.8, 1.2], [1.1, 0.9]) },
-      { translateY: floatY.value },
-    ],
-    opacity: opacity.value * 0.7,
-  }));
-
-  const animatedStyle3 = useAnimatedStyle(() => ({
-    transform: [
-      { rotate: `${rotation.value * 0.3}deg` },
-      { scale: interpolate(scale.value, [0.8, 1.2], [0.9, 1.1]) },
-      { translateX: floatY.value * 0.5 },
-    ],
-    opacity: opacity.value * 0.5,
-  }));
-
   const getGradientColors = () => {
     switch (variant) {
-      case "home":
-        return ["#3b82f6", "#1d4ed8", "#1e40af"];
       case "courses":
-        return ["#8b5cf6", "#7c3aed", "#6d28d9"];
+        return ["#3b82f6", "#8b5cf6", "#ef4444"];
       case "profile":
-        return ["#06b6d4", "#0891b2", "#0e7490"];
+        return ["#10b981", "#3b82f6", "#8b5cf6"];
       case "chat":
-        return ["#10b981", "#059669", "#047857"];
+        return ["#f59e0b", "#ef4444", "#3b82f6"];
       default:
-        return ["#3b82f6", "#1d4ed8", "#1e40af"];
+        return ["#3b82f6", "#8b5cf6", "#ef4444"];
     }
   };
 
+  const animatedStyle1 = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { rotate: `${rotation.value}deg` },
+        { scale: scale.value },
+        { translateY: floatY.value },
+      ],
+      opacity: opacity.value,
+    };
+  });
+
+  const animatedStyle2 = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { rotate: `${-rotation.value * 0.5}deg` },
+        { scale: scale.value * 0.8 },
+        { translateY: -floatY.value },
+      ],
+      opacity: opacity.value * 0.7,
+    };
+  });
+
+  const animatedStyle3 = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { rotate: `${rotation.value * 0.3}deg` },
+        { scale: scale.value * 1.1 },
+        { translateY: floatY.value * 0.5 },
+      ],
+      opacity: opacity.value * 0.5,
+    };
+  });
+
   return (
     <View style={styles.container}>
+      {/* Gradient Background */}
       <LinearGradient
-        colors={["#030712", "#111827", "#1f2937"]}
-        style={styles.backgroundGradient}
+        colors={["#030712", "#0f172a", "#1e293b"]}
+        style={StyleSheet.absoluteFillObject}
       />
 
-      {/* Animated Shape 1 - Large Circle */}
+      {/* Animated Shapes */}
       <Animated.View style={[styles.shape1, animatedStyle1]}>
-        <Svg width={width * 0.8} height={width * 0.8}>
+        <Svg width={200} height={200}>
           <Circle
-            cx={width * 0.4}
-            cy={width * 0.4}
-            r={width * 0.3}
-            fill="url(#gradient1)"
-            opacity={0.1}
-          />
-          <Circle
-            cx={width * 0.4}
-            cy={width * 0.4}
-            r={width * 0.2}
+            cx={100}
+            cy={100}
+            r={80}
             fill="none"
             stroke={getGradientColors()[0]}
             strokeWidth={2}
             opacity={0.3}
           />
-        </Svg>
-      </Animated.View>
-
-      {/* Animated Shape 2 - Polygon */}
-      <Animated.View style={[styles.shape2, animatedStyle2]}>
-        <Svg width={200} height={200}>
           <Polygon
             points="100,20 180,100 100,180 20,100"
-            fill={getGradientColors()[1]}
-            opacity={0.15}
-          />
-          <Polygon
-            points="100,40 160,100 100,160 40,100"
             fill="none"
-            stroke={getGradientColors()[2]}
-            strokeWidth={1.5}
-            opacity={0.4}
+            stroke={getGradientColors()[1]}
+            strokeWidth={1}
+            opacity={0.2}
           />
         </Svg>
       </Animated.View>
 
-      {/* Animated Shape 3 - Wave Path */}
+      <Animated.View style={[styles.shape2, animatedStyle2]}>
+        <Svg width={150} height={150}>
+          <Ellipse
+            cx={75}
+            cy={75}
+            rx={60}
+            ry={40}
+            fill="none"
+            stroke={getGradientColors()[2]}
+            strokeWidth={3}
+            opacity={0.25}
+          />
+          <Circle
+            cx={75}
+            cy={75}
+            r={30}
+            fill={getGradientColors()[0]}
+            opacity={0.1}
+          />
+        </Svg>
+      </Animated.View>
+
       <Animated.View style={[styles.shape3, animatedStyle3]}>
         <Svg width={width} height={150}>
           <Path
@@ -166,14 +178,14 @@ const AnimatedBackground: React.FC<AnimatedBackgroundProps> = ({
         </Svg>
       </Animated.View>
 
-      {/* Floating Particles */}
+      {/* Simple Floating Particles */}
       <FloatingParticles variant={variant} />
     </View>
   );
 };
 
 const FloatingParticles: React.FC<{ variant: string }> = ({ variant }) => {
-  const particles = Array.from({ length: 8 }, (_, i) => {
+  const particles = Array.from({ length: 6 }, (_, i) => {
     const translateY = useSharedValue(0);
     const translateX = useSharedValue(0);
     const opacity = useSharedValue(0.3);
@@ -181,16 +193,11 @@ const FloatingParticles: React.FC<{ variant: string }> = ({ variant }) => {
     useEffect(() => {
       const delay = i * 500;
 
+      // Simple animations without complex easing
       translateY.value = withRepeat(
         withSequence(
-          withTiming(-50, {
-            duration: 3000 + delay,
-            easing: Easing.inOut(Easing.sine),
-          }),
-          withTiming(50, {
-            duration: 3000 + delay,
-            easing: Easing.inOut(Easing.sine),
-          }),
+          withTiming(-30, { duration: 3000 + delay }),
+          withTiming(30, { duration: 3000 + delay }),
         ),
         -1,
         true,
@@ -198,14 +205,8 @@ const FloatingParticles: React.FC<{ variant: string }> = ({ variant }) => {
 
       translateX.value = withRepeat(
         withSequence(
-          withTiming(30, {
-            duration: 4000 + delay,
-            easing: Easing.inOut(Easing.sine),
-          }),
-          withTiming(-30, {
-            duration: 4000 + delay,
-            easing: Easing.inOut(Easing.sine),
-          }),
+          withTiming(-20, { duration: 4000 + delay }),
+          withTiming(20, { duration: 4000 + delay }),
         ),
         -1,
         true,
@@ -214,44 +215,41 @@ const FloatingParticles: React.FC<{ variant: string }> = ({ variant }) => {
       opacity.value = withRepeat(
         withSequence(
           withTiming(0.8, { duration: 2000 + delay }),
-          withTiming(0.1, { duration: 2000 + delay }),
+          withTiming(0.2, { duration: 2000 + delay }),
         ),
         -1,
         true,
       );
     }, []);
 
-    const animatedParticleStyle = useAnimatedStyle(() => ({
-      transform: [
-        { translateY: translateY.value },
-        { translateX: translateX.value },
-      ],
-      opacity: opacity.value,
-    }));
+    const animatedStyle = useAnimatedStyle(() => {
+      return {
+        transform: [
+          { translateY: translateY.value },
+          { translateX: translateX.value },
+        ],
+        opacity: opacity.value,
+      };
+    });
+
+    const colors = ["#3b82f6", "#8b5cf6", "#ef4444", "#10b981", "#f59e0b"];
+    const size = 4 + (i % 3) * 2;
 
     return (
       <Animated.View
         key={i}
         style={[
           styles.particle,
+          animatedStyle,
           {
-            left: (i * width) / 8 + Math.random() * 50,
-            top: height * 0.1 + Math.random() * height * 0.8,
+            left: `${15 + ((i * 15) % 70)}%`,
+            top: `${20 + ((i * 20) % 60)}%`,
+            width: size,
+            height: size,
+            backgroundColor: colors[i % colors.length],
           },
-          animatedParticleStyle,
         ]}
-      >
-        <View
-          style={[
-            styles.particleDot,
-            {
-              backgroundColor: i % 2 === 0 ? "#3b82f6" : "#8b5cf6",
-              width: 4 + Math.random() * 8,
-              height: 4 + Math.random() * 8,
-            },
-          ]}
-        />
-      </Animated.View>
+      />
     );
   });
 
@@ -267,22 +265,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     overflow: "hidden",
   },
-  backgroundGradient: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
   shape1: {
     position: "absolute",
-    top: -width * 0.2,
-    right: -width * 0.2,
+    top: height * 0.1,
+    right: width * 0.1,
   },
   shape2: {
     position: "absolute",
-    bottom: height * 0.3,
-    left: -50,
+    bottom: height * 0.2,
+    left: width * 0.05,
   },
   shape3: {
     position: "absolute",
@@ -291,8 +282,6 @@ const styles = StyleSheet.create({
   },
   particle: {
     position: "absolute",
-  },
-  particleDot: {
     borderRadius: 50,
     boxShadow: "0px 2px 4px rgba(59, 130, 246, 0.8)",
     elevation: 4,

@@ -22,7 +22,7 @@ const HomeScreen = () => {
 
   const features = [
     {
-      icon: "brain-outline",
+      icon: "bulb-outline",
       title: t("home.features.aiLearning.title"),
       description: t("home.features.aiLearning.description"),
     },

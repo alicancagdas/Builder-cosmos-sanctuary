@@ -28,6 +28,8 @@
       "successRate": "Success Rate"
     },
     "features": {
+      "title": "Why CodeMentor AI?",
+      "description": "We provide you with the best experience by combining modern technology with traditional learning methods",
       "aiLearning": {
         "title": "AI-Powered Learning",
         "description": "Personalized learning experience with artificial intelligence"
