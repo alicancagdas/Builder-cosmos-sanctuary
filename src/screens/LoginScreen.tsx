@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   TextInput,
   Alert,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Card, Button, Checkbox } from "react-native-paper";
+import { Card, Button, Checkbox, Chip } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { authService } from "../services/authService";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -24,14 +26,23 @@ const LoginScreen = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (isLogin) {
       if (!email || !password) {
         Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
         return;
       }
-      // Login logic here
-      navigation.navigate("Main");
+
+      try {
+        const result = await authService.login(email, password);
+        if (result.success) {
+          navigation.navigate("Main");
+        } else {
+          Alert.alert("Giriş Hatası", result.error || "Giriş yapılamadı.");
+        }
+      } catch (error) {
+        Alert.alert("Hata", "Giriş işlemi sırasında bir hata oluştu.");
+      }
     } else {
       if (!email || !password || !confirmPassword || !firstName || !lastName) {
         Alert.alert("Hata", "Lütfen tüm alanları doldurun.");
@@ -45,8 +56,43 @@ const LoginScreen = () => {
         Alert.alert("Hata", "Kullanım şartlarını kabul etmelisiniz.");
         return;
       }
-      // Register logic here
-      navigation.navigate("Main");
+
+      try {
+        const result = await authService.register({
+          email,
+          password,
+          firstName,
+          lastName,
+        });
+
+        if (result.success) {
+          Alert.alert("Başarılı", "Hesabınız oluşturuldu!", [
+            { text: "Tamam", onPress: () => navigation.navigate("Main") },
+          ]);
+        } else {
+          Alert.alert(
+            "Kayıt Hatası",
+            result.error || "Kayıt işlemi tamamlanamadı.",
+          );
+        }
+      } catch (error) {
+        Alert.alert("Hata", "Kayıt işlemi sırasında bir hata oluştu.");
+      }
+    }
+  };
+
+  const handleQuickLogin = async (userId: string) => {
+    try {
+      const result = await authService.quickLogin(userId);
+      if (result.success) {
+        Alert.alert(
+          "Demo Giriş",
+          `${result.user?.displayName} olarak giriş yapıldı!`,
+          [{ text: "Tamam", onPress: () => navigation.navigate("Main") }],
+        );
+      }
+    } catch (error) {
+      Alert.alert("Hata", "Demo giriş işlemi başarısız.");
     }
   };
 
@@ -259,6 +305,45 @@ const LoginScreen = () => {
         </Card.Content>
       </Card>
 
+      {/* Demo Users */}
+      <Card style={styles.demoCard}>
+        <Card.Content style={styles.demoContent}>
+          <Text style={styles.demoTitle}>Demo Kullanıcıları</Text>
+          <Text style={styles.demoSubtitle}>
+            Hızlı test için demo hesapları
+          </Text>
+
+          <View style={styles.demoUsers}>
+            <TouchableOpacity
+              style={styles.demoUser}
+              onPress={() => handleQuickLogin("1")}
+            >
+              <Chip mode="outlined" style={styles.demoChip}>
+                👨‍💻 Ethan Carter (Intermediate)
+              </Chip>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.demoUser}
+              onPress={() => handleQuickLogin("2")}
+            >
+              <Chip mode="outlined" style={styles.demoChip}>
+                🎓 Demo User (Beginner)
+              </Chip>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.demoUser}
+              onPress={() => handleQuickLogin("3")}
+            >
+              <Chip mode="outlined" style={styles.demoChip}>
+                🎯 Admin User (Expert)
+              </Chip>
+            </TouchableOpacity>
+          </View>
+        </Card.Content>
+      </Card>
+
       {/* Footer */}
       <TouchableOpacity style={styles.footer}>
         <Text style={styles.footerText}>← Ana sayfaya dön</Text>
@@ -466,6 +551,40 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#f9fafb",
+  },
+  demoCard: {
+    backgroundColor: "#0f172a",
+    borderWidth: 1,
+    borderColor: "#334155",
+    marginBottom: 24,
+  },
+  demoContent: {
+    padding: 20,
+  },
+  demoTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#f9fafb",
+    marginBottom: 4,
+    textAlign: "center",
+  },
+  demoSubtitle: {
+    fontSize: 14,
+    color: "#64748b",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  demoUsers: {
+    gap: 8,
+  },
+  demoUser: {
+    width: "100%",
+  },
+  demoChip: {
+    backgroundColor: "transparent",
+    borderColor: "#3b82f6",
+    width: "100%",
+    justifyContent: "center",
   },
   footer: {
     alignItems: "center",

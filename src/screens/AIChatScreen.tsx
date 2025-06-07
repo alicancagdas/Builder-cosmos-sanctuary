@@ -82,87 +82,74 @@ const AIChatScreen = () => {
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputMessage,
-      sender: "user",
+      sender: 'user',
       timestamp: new Date(),
-      type: "text",
+      type: 'text',
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInputMessage("");
+    const currentInput = inputMessage;
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse = generateAIResponse(inputMessage);
-      setMessages((prev) => [...prev, aiResponse]);
+    try {
+      // Generate AI response using Ollama
+      const aiResponse = await generateAIResponse(currentInput);
+      setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Failed to get AI response:', error);
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: 'Üzgünüm, şu anda yanıt veremiyorum. Lütfen daha sonra tekrar deneyin.',
+        sender: 'ai',
+        timestamp: new Date(),
+        type: 'text',
+      };
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
-  const generateAIResponse = (userInput: string): Message => {
-    const input = userInput.toLowerCase();
+  const generateAIResponse = async (userInput: string): Promise<Message> => {
+    try {
+      // Import ollamaService dynamically to avoid import issues
+      const { ollamaService } = await import('../services/ollamaService');
 
-    let response = "";
-    let type: "text" | "code" = "text";
+      let response: string;
+      let type: 'text' | 'code' = 'text';
 
-    if (input.includes("pointer") || input.includes("işaretçi")) {
-      response = `C++ dilinde pointer, bir değişkenin bellek adresini saklayan özel bir değişken türüdür.
+      // Check if it's a code-related question
+      if (userInput.includes('kod') || userInput.includes('code') ||
+          userInput.includes('```') || userInput.includes('hata') ||
+          userInput.includes('error')) {
+        response = await ollamaService.generateCodeSuggestion(userInput);
+        type = 'code';
+      } else {
+        response = await ollamaService.generateCodeSuggestion(userInput);
+        type = 'text';
+      }
 
-Temel pointer kullanımı:
+      return {
+        id: Date.now().toString(),
+        content: response,
+        sender: 'ai',
+        timestamp: new Date(),
+        type,
+      };
+    } catch (error) {
+      console.error('AI response error:', error);
 
-int x = 10;
-int* ptr = &x;  // ptr, x'in adresini saklar
-
-cout << *ptr;   // 10 - ptr'nin işaret ettiği değer
-cout << ptr;    // Bellek adresi
-
-Pointer kullanırken dikkat edilmesi gerekenler:
-• Pointer'ı kullanmadan önce geçerli bir adresle initialize edin
-• Null pointer'ları kontrol edin
-• Delete edilen pointer'ları nullptr yapın`;
-      type = "code";
-    } else if (input.includes("class") || input.includes("struct")) {
-      response = `C++ dilinde class ve struct arasındaki temel farklar:
-
-**Class:**
-- Üyeleri varsayılan olarak private'dır
-- Genellikle karmaşık objeler için kullanılır
-- Encapsulation için idealdir
-
-**Struct:**
-- Üyeleri varsayılan olarak public'dir
-- Genellikle basit veri grupları için kullanılır
-- C ile uyumluluk sağlar
-
-class MyClass {
-    int x;  // private
-public:
-    void setX(int val) { x = val; }
-};
-
-struct MyStruct {
-    int x;  // public
-    void setX(int val) { x = val; }
-};`;
-      type = "code";
-    } else {
-      response = `Bu konuda size yardımcı olmaya çalışayım. Sorunuzla ilgili daha spesifik bilgi verebilir misiniz? 
-
-Örneğin:
-• Hangi kod parçasında sorun yaşıyorsunuz?
-• Hangi kavram hakkında daha fazla bilgi istiyorsunuz?
-• Alınan hata mesajı nedir?
-
-Bu şekilde size daha detaylı ve hedefe yönelik yardım edebilirim.`;
+      // Fallback to mock response if Ollama is not available
+      return {
+        id: Date.now().toString(),
+        content: 'AI servisi şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin veya Docker Compose ile Ollama servisini başlattığınızdan emin olun.',
+        sender: 'ai',
+        timestamp: new Date(),
+        type: 'text',
+      };
     }
-
-    return {
-      id: Date.now().toString(),
-      content: response,
-      sender: "ai",
-      timestamp: new Date(),
-      type,
-    };
+  };
   };
 
   const handleQuestionClick = (question: string) => {
