@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 // Import i18n configuration
 import "./src/i18n";
 import { LanguageProvider } from "./src/contexts/LanguageContext";
+import { ThemeProvider } from "./src/contexts/ThemeContext";
 
 // Screens
 import HomeScreen from "./src/screens/HomeScreen";
@@ -171,27 +172,29 @@ function AppNavigator() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <PaperProvider theme={customTheme}>
-        <SafeAreaProvider>
-          <NavigationContainer
-            theme={{
-              dark: true,
-              colors: {
-                primary: "#3b82f6",
-                background: "#030712",
-                card: "#0f172a",
-                text: "#f9fafb",
-                border: "#334155",
-                notification: "#3b82f6",
-              },
-            }}
-          >
-            <AppNavigator />
-          </NavigationContainer>
-          <StatusBar style="light" backgroundColor="#030712" />
-        </SafeAreaProvider>
-      </PaperProvider>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <PaperProvider theme={customTheme}>
+          <SafeAreaProvider>
+            <NavigationContainer
+              theme={{
+                dark: true,
+                colors: {
+                  primary: "#3b82f6",
+                  background: "#030712",
+                  card: "#0f172a",
+                  text: "#f9fafb",
+                  border: "#334155",
+                  notification: "#3b82f6",
+                },
+              }}
+            >
+              <AppNavigator />
+            </NavigationContainer>
+            <StatusBar style="light" backgroundColor="#030712" />
+          </SafeAreaProvider>
+        </PaperProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
