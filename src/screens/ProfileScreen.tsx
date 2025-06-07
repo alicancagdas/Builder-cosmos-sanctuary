@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Dimensions,
   Image,
+  Animated,
+  Easing,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -24,9 +26,8 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "../contexts/ThemeContext";
 import { useLanguage } from "../contexts/LanguageContext";
 import LanguageSwitch from "../components/common/LanguageSwitch";
-import AnimatedBackground from "../components/AnimatedBackground";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -34,6 +35,73 @@ const ProfileScreen = () => {
   const { isDarkMode, toggleTheme, colors } = useTheme();
   const { currentLanguage } = useLanguage();
   const [activeTab, setActiveTab] = useState("achievements");
+
+  // Animation values
+  const [fadeAnim] = useState(new Animated.Value(0));
+  const [slideAnim] = useState(new Animated.Value(50));
+  const [scaleAnim] = useState(new Animated.Value(0.9));
+  const [rotateAnim] = useState(new Animated.Value(0));
+  const [pulseAnim] = useState(new Animated.Value(1));
+  const [parallaxAnim] = useState(new Animated.Value(0));
+
+  useEffect(() => {
+    // Entrance animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1200,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 1000,
+        easing: Easing.out(Easing.back(1.2)),
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 800,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Continuous animations
+    const rotateAnimation = Animated.loop(
+      Animated.timing(rotateAnim, {
+        toValue: 1,
+        duration: 20000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+
+    const pulseAnimation = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 2000,
+          easing: Easing.inOut(Easing.sine),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 2000,
+          easing: Easing.inOut(Easing.sine),
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+
+    rotateAnimation.start();
+    pulseAnimation.start();
+
+    return () => {
+      rotateAnimation.stop();
+      pulseAnimation.stop();
+    };
+  }, []);
 
   const user = {
     name: "Ethan Carter",
@@ -60,6 +128,7 @@ const ProfileScreen = () => {
       color: "#3b82f6",
       earned: true,
       date: "2024",
+      progress: 100,
     },
     {
       id: 2,
@@ -72,6 +141,7 @@ const ProfileScreen = () => {
       color: "#8b5cf6",
       earned: true,
       date: "2024",
+      progress: 100,
     },
     {
       id: 3,
@@ -84,6 +154,7 @@ const ProfileScreen = () => {
       color: "#10b981",
       earned: true,
       date: "2024",
+      progress: 100,
     },
     {
       id: 4,
@@ -96,6 +167,7 @@ const ProfileScreen = () => {
       color: "#f59e0b",
       earned: true,
       date: "2024",
+      progress: 100,
     },
     {
       id: 5,
@@ -105,6 +177,7 @@ const ProfileScreen = () => {
       color: "#ef4444",
       earned: false,
       date: "2024",
+      progress: 75,
     },
     {
       id: 6,
@@ -117,6 +190,7 @@ const ProfileScreen = () => {
       color: "#3b82f6",
       earned: false,
       date: "2024",
+      progress: 45,
     },
   ];
 
@@ -150,38 +224,118 @@ const ProfileScreen = () => {
     },
   ];
 
-  const renderAchievements = () => (
-    <View style={styles.tabContent}>
-      <View style={styles.achievementsGrid}>
-        {achievements.map((achievement) => (
-          <Card
-            key={achievement.id}
-            style={[
-              styles.achievementCard,
-              { backgroundColor: colors.card },
-              !achievement.earned && styles.achievementLocked,
-            ]}
+  const handleTabPress = (tabId: string) => {
+    // Animate tab change
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.out(Easing.back(1.5)),
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    setActiveTab(tabId);
+  };
+
+  const AnimatedAchievementCard = ({ achievement, index }) => {
+    const [cardScale] = useState(new Animated.Value(1));
+    const [cardRotate] = useState(new Animated.Value(0));
+
+    const handlePress = () => {
+      Animated.sequence([
+        Animated.parallel([
+          Animated.timing(cardScale, {
+            toValue: 0.95,
+            duration: 100,
+            useNativeDriver: true,
+          }),
+          Animated.timing(cardRotate, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.parallel([
+          Animated.timing(cardScale, {
+            toValue: 1,
+            duration: 300,
+            easing: Easing.out(Easing.back(1.5)),
+            useNativeDriver: true,
+          }),
+          Animated.timing(cardRotate, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+    };
+
+    const rotateInterpolate = cardRotate.interpolate({
+      inputRange: [0, 1],
+      outputRange: ["0deg", "5deg"],
+    });
+
+    return (
+      <Animated.View
+        style={[
+          {
+            transform: [{ scale: cardScale }, { rotate: rotateInterpolate }],
+          },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={handlePress}
+          style={[
+            styles.achievementCard,
+            {
+              backgroundColor: colors.card,
+              shadowColor: achievement.color,
+              shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: achievement.earned ? 0.3 : 0.1,
+              shadowRadius: 16,
+              elevation: achievement.earned ? 8 : 4,
+            },
+            !achievement.earned && styles.achievementLocked,
+          ]}
+        >
+          <LinearGradient
+            colors={
+              achievement.earned
+                ? [`${achievement.color}20`, `${achievement.color}10`]
+                : [`${colors.border}20`, `${colors.border}10`]
+            }
+            style={styles.achievementGradient}
           >
-            <Card.Content style={styles.achievementContent}>
-              <View
+            <View style={styles.achievementContent}>
+              <Animated.View
                 style={[
                   styles.achievementIcon,
                   {
                     backgroundColor: achievement.earned
                       ? achievement.color
                       : colors.border,
+                    transform: [{ scale: pulseAnim }],
                   },
                 ]}
               >
                 <Ionicons
                   name={achievement.icon as any}
-                  size={24}
+                  size={28}
                   color={achievement.earned ? "white" : colors.textSecondary}
                 />
-              </View>
+              </Animated.View>
+
               <Text style={[styles.achievementTitle, { color: colors.text }]}>
                 {achievement.title}
               </Text>
+
               <Text
                 style={[
                   styles.achievementDesc,
@@ -190,123 +344,245 @@ const ProfileScreen = () => {
               >
                 {achievement.description}
               </Text>
+
+              {!achievement.earned && (
+                <View style={styles.progressContainer}>
+                  <ProgressBar
+                    progress={achievement.progress / 100}
+                    color={achievement.color}
+                    style={styles.achievementProgress}
+                  />
+                  <Text
+                    style={[
+                      styles.progressText,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    %{achievement.progress}
+                  </Text>
+                </View>
+              )}
+
               {achievement.earned && (
                 <Chip
-                  mode="outlined"
+                  mode="filled"
                   style={[
                     styles.earnedChip,
-                    { borderColor: achievement.color },
+                    { backgroundColor: achievement.color },
                   ]}
-                  textStyle={{ color: achievement.color, fontSize: 10 }}
+                  textStyle={{
+                    color: "white",
+                    fontSize: 10,
+                    fontWeight: "600",
+                  }}
                 >
-                  {achievement.date}
+                  ✨ {achievement.date}
                 </Chip>
               )}
-            </Card.Content>
-          </Card>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  };
+
+  const renderAchievements = () => (
+    <Animated.View
+      style={[
+        styles.tabContent,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        },
+      ]}
+    >
+      <View style={styles.achievementsGrid}>
+        {achievements.map((achievement, index) => (
+          <AnimatedAchievementCard
+            key={achievement.id}
+            achievement={achievement}
+            index={index}
+          />
         ))}
       </View>
-    </View>
+    </Animated.View>
   );
 
   const renderActivity = () => (
-    <View style={styles.tabContent}>
-      {activities.map((activity) => (
-        <Card
+    <Animated.View
+      style={[
+        styles.tabContent,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        },
+      ]}
+    >
+      {activities.map((activity, index) => (
+        <Animated.View
           key={activity.id}
-          style={[styles.activityCard, { backgroundColor: colors.card }]}
+          style={[
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            },
+          ]}
         >
-          <Card.Content style={styles.activityContent}>
-            <View
-              style={[styles.activityIcon, { backgroundColor: activity.color }]}
+          <Card style={[styles.activityCard, { backgroundColor: colors.card }]}>
+            <LinearGradient
+              colors={[`${activity.color}15`, `${activity.color}05`]}
+              style={styles.activityGradient}
             >
-              <Ionicons name={activity.icon as any} size={20} color="white" />
-            </View>
-            <View style={styles.activityText}>
-              <Text style={[styles.activityTitle, { color: colors.text }]}>
-                {activity.title}
-              </Text>
-              <Text
-                style={[styles.activityDesc, { color: colors.textSecondary }]}
-              >
-                {activity.description}
-              </Text>
-              <Text
-                style={[styles.activityTime, { color: colors.textSecondary }]}
-              >
-                {activity.time}
-              </Text>
-            </View>
-          </Card.Content>
-        </Card>
+              <View style={styles.activityContent}>
+                <Animated.View
+                  style={[
+                    styles.activityIcon,
+                    {
+                      backgroundColor: activity.color,
+                      transform: [{ scale: pulseAnim }],
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name={activity.icon as any}
+                    size={20}
+                    color="white"
+                  />
+                </Animated.View>
+                <View style={styles.activityText}>
+                  <Text style={[styles.activityTitle, { color: colors.text }]}>
+                    {activity.title}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.activityDesc,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    {activity.description}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.activityTime,
+                      { color: colors.textSecondary },
+                    ]}
+                  >
+                    {activity.time}
+                  </Text>
+                </View>
+              </View>
+            </LinearGradient>
+          </Card>
+        </Animated.View>
       ))}
-    </View>
+    </Animated.View>
   );
 
   const renderSettings = () => (
-    <View style={styles.tabContent}>
+    <Animated.View
+      style={[
+        styles.tabContent,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
+        },
+      ]}
+    >
       <Card style={[styles.settingsCard, { backgroundColor: colors.card }]}>
-        <Card.Content style={styles.settingsContent}>
-          <Text style={[styles.settingsSection, { color: colors.text }]}>
-            {t("profile.settings.appearance", "Görünüm")}
-          </Text>
+        <LinearGradient
+          colors={[`${colors.primary}10`, `${colors.secondary}05`]}
+          style={styles.settingsGradient}
+        >
+          <View style={styles.settingsContent}>
+            <Text style={[styles.settingsSection, { color: colors.text }]}>
+              {t("profile.settings.appearance", "Görünüm")} ✨
+            </Text>
 
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Ionicons name="moon" size={20} color={colors.text} />
-              <Text style={[styles.settingLabel, { color: colors.text }]}>
-                {t("profile.settings.darkMode", "Koyu Mod")}
-              </Text>
-            </View>
-            <Switch
-              value={isDarkMode}
-              onValueChange={toggleTheme}
-              color={colors.primary}
+            <TouchableOpacity style={styles.settingItem} onPress={toggleTheme}>
+              <View style={styles.settingInfo}>
+                <Animated.View
+                  style={[
+                    styles.settingIconContainer,
+                    {
+                      transform: [
+                        {
+                          rotate: rotateAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ["0deg", "360deg"],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}
+                >
+                  <Ionicons
+                    name={isDarkMode ? "moon" : "sunny"}
+                    size={20}
+                    color={colors.text}
+                  />
+                </Animated.View>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>
+                  {t("profile.settings.darkMode", "Koyu Mod")}
+                </Text>
+              </View>
+              <Switch
+                value={isDarkMode}
+                onValueChange={toggleTheme}
+                color={colors.primary}
+              />
+            </TouchableOpacity>
+
+            <Divider
+              style={{ backgroundColor: colors.border, marginVertical: 15 }}
             />
-          </View>
 
-          <Divider
-            style={{ backgroundColor: colors.border, marginVertical: 15 }}
-          />
+            <Text style={[styles.settingsSection, { color: colors.text }]}>
+              {t("profile.settings.language", "Dil")} 🌍
+            </Text>
 
-          <Text style={[styles.settingsSection, { color: colors.text }]}>
-            {t("profile.settings.language", "Dil")}
-          </Text>
-
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Ionicons name="language" size={20} color={colors.text} />
-              <Text style={[styles.settingLabel, { color: colors.text }]}>
-                {t("profile.settings.appLanguage", "Uygulama Dili")}
-              </Text>
+            <View style={styles.settingItem}>
+              <View style={styles.settingInfo}>
+                <View style={styles.settingIconContainer}>
+                  <Ionicons name="language" size={20} color={colors.text} />
+                </View>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>
+                  {t("profile.settings.appLanguage", "Uygulama Dili")}
+                </Text>
+              </View>
+              <LanguageSwitch variant="button" showLabel={true} />
             </View>
-            <LanguageSwitch variant="button" showLabel={true} />
-          </View>
 
-          <Divider
-            style={{ backgroundColor: colors.border, marginVertical: 15 }}
-          />
-
-          <Text style={[styles.settingsSection, { color: colors.text }]}>
-            {t("profile.settings.notifications", "Bildirimler")}
-          </Text>
-
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
-              <Ionicons name="notifications" size={20} color={colors.text} />
-              <Text style={[styles.settingLabel, { color: colors.text }]}>
-                {t("profile.settings.pushNotifications", "Push Bildirimleri")}
-              </Text>
-            </View>
-            <Switch
-              value={true}
-              onValueChange={() => {}}
-              color={colors.primary}
+            <Divider
+              style={{ backgroundColor: colors.border, marginVertical: 15 }}
             />
+
+            <Text style={[styles.settingsSection, { color: colors.text }]}>
+              {t("profile.settings.notifications", "Bildirimler")} 🔔
+            </Text>
+
+            <View style={styles.settingItem}>
+              <View style={styles.settingInfo}>
+                <View style={styles.settingIconContainer}>
+                  <Ionicons
+                    name="notifications"
+                    size={20}
+                    color={colors.text}
+                  />
+                </View>
+                <Text style={[styles.settingLabel, { color: colors.text }]}>
+                  {t("profile.settings.pushNotifications", "Push Bildirimleri")}
+                </Text>
+              </View>
+              <Switch
+                value={true}
+                onValueChange={() => {}}
+                color={colors.primary}
+              />
+            </View>
           </View>
-        </Card.Content>
+        </LinearGradient>
       </Card>
-    </View>
+    </Animated.View>
   );
 
   const renderTabContent = () => {
@@ -324,96 +600,197 @@ const ProfileScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AnimatedBackground variant="profile" />
+      {/* Animated Background */}
+      <Animated.View
+        style={[
+          styles.backgroundContainer,
+          {
+            transform: [
+              {
+                rotate: rotateAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: ["0deg", "360deg"],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <View
+          style={[
+            styles.backgroundShape1,
+            { backgroundColor: `${colors.primary}10` },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundShape2,
+            { backgroundColor: `${colors.secondary}08` },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundShape3,
+            { backgroundColor: `${colors.success}06` },
+          ]}
+        />
+      </Animated.View>
 
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <LinearGradient
-          colors={[colors.primary, colors.secondary]}
-          style={styles.header}
+        {/* Header with Glassmorphism */}
+        <Animated.View
+          style={[
+            {
+              opacity: fadeAnim,
+              transform: [{ scale: scaleAnim }],
+            },
+          ]}
         >
-          <View style={styles.profileSection}>
-            <Avatar.Image
-              size={80}
-              source={{ uri: user.avatar }}
-              style={styles.avatar}
-            />
-            <View style={styles.profileInfo}>
-              <Text style={styles.userName}>{user.name}</Text>
-              <Text style={styles.userEmail}>{user.email}</Text>
-              <Chip
-                mode="outlined"
-                style={styles.levelChip}
-                textStyle={styles.levelText}
+          <LinearGradient
+            colors={[colors.primary, colors.secondary, `${colors.primary}80`]}
+            style={styles.header}
+          >
+            <View style={styles.profileSection}>
+              <Animated.View
+                style={[
+                  {
+                    transform: [{ scale: pulseAnim }],
+                  },
+                ]}
               >
-                {t(`userLevels.${user.level.toLowerCase()}`, user.level)}
-              </Chip>
+                <Avatar.Image
+                  size={90}
+                  source={{ uri: user.avatar }}
+                  style={[
+                    styles.avatar,
+                    {
+                      borderWidth: 4,
+                      borderColor: "rgba(255, 255, 255, 0.3)",
+                      shadowColor: colors.primary,
+                      shadowOffset: { width: 0, height: 10 },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 20,
+                      elevation: 10,
+                    },
+                  ]}
+                />
+              </Animated.View>
+              <View style={styles.profileInfo}>
+                <Text style={styles.userName}>{user.name}</Text>
+                <Text style={styles.userEmail}>{user.email}</Text>
+                <Chip
+                  mode="outlined"
+                  style={styles.levelChip}
+                  textStyle={styles.levelText}
+                >
+                  ✨ {t(`userLevels.${user.level.toLowerCase()}`, user.level)}
+                </Chip>
+              </View>
             </View>
-          </View>
-        </LinearGradient>
+          </LinearGradient>
+        </Animated.View>
 
-        {/* Stats */}
-        <View style={styles.statsContainer}>
+        {/* Stats with enhanced animations */}
+        <Animated.View
+          style={[
+            styles.statsContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            },
+          ]}
+        >
           <View style={styles.statsGrid}>
-            <Card style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Card.Content style={styles.statContent}>
-                <Text style={[styles.statValue, { color: colors.primary }]}>
-                  {user.coursesCompleted}
-                </Text>
-                <Text
-                  style={[styles.statLabel, { color: colors.textSecondary }]}
+            {[
+              {
+                label: t("profile.coursesCompleted"),
+                value: user.coursesCompleted,
+                color: colors.primary,
+                icon: "book",
+              },
+              {
+                label: t("profile.exercisesSolved"),
+                value: user.exercisesSolved,
+                color: colors.secondary,
+                icon: "code-slash",
+              },
+              {
+                label: t("profile.totalPoints"),
+                value: user.totalPoints,
+                color: colors.success,
+                icon: "trophy",
+              },
+              {
+                label: t("profile.rank"),
+                value: `#${user.rank}`,
+                color: colors.warning,
+                icon: "star",
+              },
+            ].map((stat, index) => (
+              <Animated.View
+                key={index}
+                style={[
+                  {
+                    opacity: fadeAnim,
+                    transform: [{ translateY: slideAnim }],
+                  },
+                ]}
+              >
+                <Card
+                  style={[styles.statCard, { backgroundColor: colors.card }]}
                 >
-                  {t("profile.coursesCompleted")}
-                </Text>
-              </Card.Content>
-            </Card>
-
-            <Card style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Card.Content style={styles.statContent}>
-                <Text style={[styles.statValue, { color: colors.secondary }]}>
-                  {user.exercisesSolved}
-                </Text>
-                <Text
-                  style={[styles.statLabel, { color: colors.textSecondary }]}
-                >
-                  {t("profile.exercisesSolved")}
-                </Text>
-              </Card.Content>
-            </Card>
-
-            <Card style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Card.Content style={styles.statContent}>
-                <Text style={[styles.statValue, { color: colors.success }]}>
-                  {user.totalPoints}
-                </Text>
-                <Text
-                  style={[styles.statLabel, { color: colors.textSecondary }]}
-                >
-                  {t("profile.totalPoints")}
-                </Text>
-              </Card.Content>
-            </Card>
-
-            <Card style={[styles.statCard, { backgroundColor: colors.card }]}>
-              <Card.Content style={styles.statContent}>
-                <Text style={[styles.statValue, { color: colors.warning }]}>
-                  #{user.rank}
-                </Text>
-                <Text
-                  style={[styles.statLabel, { color: colors.textSecondary }]}
-                >
-                  {t("profile.rank")}
-                </Text>
-              </Card.Content>
-            </Card>
+                  <LinearGradient
+                    colors={[`${stat.color}15`, `${stat.color}05`]}
+                    style={styles.statGradient}
+                  >
+                    <View style={styles.statContent}>
+                      <Animated.View
+                        style={[
+                          styles.statIcon,
+                          {
+                            backgroundColor: stat.color,
+                            transform: [{ scale: pulseAnim }],
+                          },
+                        ]}
+                      >
+                        <Ionicons
+                          name={stat.icon as any}
+                          size={20}
+                          color="white"
+                        />
+                      </Animated.View>
+                      <Text style={[styles.statValue, { color: stat.color }]}>
+                        {stat.value}
+                      </Text>
+                      <Text
+                        style={[
+                          styles.statLabel,
+                          { color: colors.textSecondary },
+                        ]}
+                      >
+                        {stat.label}
+                      </Text>
+                    </View>
+                  </LinearGradient>
+                </Card>
+              </Animated.View>
+            ))}
           </View>
-        </View>
+        </Animated.View>
 
-        {/* Tabs */}
-        <View style={styles.tabsContainer}>
+        {/* Enhanced Tabs */}
+        <Animated.View
+          style={[
+            styles.tabsContainer,
+            {
+              opacity: fadeAnim,
+              transform: [{ translateY: slideAnim }],
+            },
+          ]}
+        >
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -436,13 +813,19 @@ const ProfileScreen = () => {
                 key={tab.id}
                 style={[
                   styles.tab,
-                  { borderBottomColor: colors.border },
+                  {
+                    backgroundColor:
+                      activeTab === tab.id
+                        ? `${colors.primary}20`
+                        : "transparent",
+                    borderBottomColor: colors.border,
+                  },
                   activeTab === tab.id && [
                     styles.activeTab,
                     { borderBottomColor: colors.primary },
                   ],
                 ]}
-                onPress={() => setActiveTab(tab.id)}
+                onPress={() => handleTabPress(tab.id)}
               >
                 <Ionicons
                   name={tab.icon as any}
@@ -464,13 +847,23 @@ const ProfileScreen = () => {
                 >
                   {tab.label}
                 </Text>
+                {activeTab === tab.id && (
+                  <Animated.View
+                    style={[
+                      styles.tabIndicator,
+                      { backgroundColor: colors.primary },
+                    ]}
+                  />
+                )}
               </TouchableOpacity>
             ))}
           </ScrollView>
-        </View>
+        </Animated.View>
 
         {/* Tab Content */}
-        {renderTabContent()}
+        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+          {renderTabContent()}
+        </Animated.View>
       </ScrollView>
     </View>
   );
@@ -480,12 +873,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backgroundContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+  },
+  backgroundShape1: {
+    position: "absolute",
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    top: -100,
+    right: -100,
+  },
+  backgroundShape2: {
+    position: "absolute",
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    bottom: 100,
+    left: -50,
+  },
+  backgroundShape3: {
+    position: "absolute",
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    top: height * 0.4,
+    right: -30,
+  },
   scrollView: {
     flex: 1,
   },
   header: {
     paddingTop: 60,
-    paddingBottom: 30,
+    paddingBottom: 40,
     paddingHorizontal: 20,
   },
   profileSection: {
@@ -494,17 +919,18 @@ const styles = StyleSheet.create({
   },
   avatar: {
     marginRight: 20,
-    borderWidth: 3,
-    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   profileInfo: {
     flex: 1,
   },
   userName: {
-    fontSize: 24,
-    fontWeight: "700",
+    fontSize: 26,
+    fontWeight: "800",
     color: "white",
     marginBottom: 4,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
   userEmail: {
     fontSize: 14,
@@ -513,7 +939,7 @@ const styles = StyleSheet.create({
   },
   levelChip: {
     alignSelf: "flex-start",
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     borderColor: "rgba(255, 255, 255, 0.3)",
   },
   levelText: {
@@ -523,7 +949,7 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     padding: 20,
-    marginTop: -15,
+    marginTop: -20,
   },
   statsGrid: {
     flexDirection: "row",
@@ -533,16 +959,27 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     minWidth: (width - 56) / 2,
-    borderRadius: 12,
-    elevation: 2,
+    borderRadius: 16,
+    elevation: 4,
+    overflow: "hidden",
+  },
+  statGradient: {
+    padding: 20,
   },
   statContent: {
     alignItems: "center",
-    paddingVertical: 16,
+  },
+  statIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
   },
   statValue: {
     fontSize: 24,
-    fontWeight: "700",
+    fontWeight: "800",
     marginBottom: 4,
   },
   statLabel: {
@@ -560,19 +997,29 @@ const styles = StyleSheet.create({
   tab: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginRight: 20,
-    borderBottomWidth: 2,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    marginRight: 15,
+    borderBottomWidth: 3,
     borderBottomColor: "transparent",
+    borderRadius: 25,
+    position: "relative",
   },
   activeTab: {
-    borderBottomWidth: 2,
+    borderBottomWidth: 3,
   },
   tabLabel: {
     fontSize: 14,
     fontWeight: "600",
-    marginLeft: 6,
+    marginLeft: 8,
+  },
+  tabIndicator: {
+    position: "absolute",
+    bottom: -3,
+    left: 20,
+    right: 20,
+    height: 3,
+    borderRadius: 2,
   },
   tabContent: {
     paddingHorizontal: 20,
@@ -581,57 +1028,75 @@ const styles = StyleSheet.create({
   achievementsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12,
+    gap: 16,
   },
   achievementCard: {
     width: (width - 56) / 2,
-    borderRadius: 12,
-    elevation: 2,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  achievementGradient: {
+    padding: 20,
   },
   achievementLocked: {
-    opacity: 0.6,
+    opacity: 0.7,
   },
   achievementContent: {
     alignItems: "center",
-    paddingVertical: 20,
   },
   achievementIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 16,
   },
   achievementTitle: {
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "700",
     textAlign: "center",
-    marginBottom: 4,
+    marginBottom: 6,
   },
   achievementDesc: {
-    fontSize: 11,
+    fontSize: 12,
     textAlign: "center",
+    marginBottom: 12,
+    lineHeight: 16,
+  },
+  progressContainer: {
+    width: "100%",
     marginBottom: 8,
-    lineHeight: 14,
+  },
+  achievementProgress: {
+    height: 6,
+    borderRadius: 3,
+    marginBottom: 4,
+  },
+  progressText: {
+    fontSize: 10,
+    textAlign: "right",
   },
   earnedChip: {
-    backgroundColor: "transparent",
+    paddingHorizontal: 8,
   },
   activityCard: {
-    marginBottom: 12,
-    borderRadius: 12,
-    elevation: 2,
+    marginBottom: 16,
+    borderRadius: 16,
+    elevation: 4,
+    overflow: "hidden",
+  },
+  activityGradient: {
+    padding: 16,
   },
   activityContent: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 16,
   },
   activityIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
@@ -652,31 +1117,43 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   settingsCard: {
-    borderRadius: 12,
-    elevation: 2,
+    borderRadius: 20,
+    elevation: 4,
+    overflow: "hidden",
+  },
+  settingsGradient: {
+    padding: 20,
   },
   settingsContent: {
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   settingsSection: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 15,
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 20,
   },
   settingItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 15,
   },
   settingInfo: {
     flexDirection: "row",
     alignItems: "center",
     flex: 1,
   },
+  settingIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
+  },
   settingLabel: {
     fontSize: 16,
-    marginLeft: 12,
+    fontWeight: "500",
     flex: 1,
   },
 });
