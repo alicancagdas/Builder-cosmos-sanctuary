@@ -294,13 +294,7 @@ const styles = StyleSheet.create({
   },
   particleDot: {
     borderRadius: 50,
-    shadowColor: "#3b82f6",
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.8,
-    shadowRadius: 4,
+    boxShadow: "0px 2px 4px rgba(59, 130, 246, 0.8)",
     elevation: 4,
   },
 });
