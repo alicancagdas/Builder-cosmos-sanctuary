@@ -11,40 +11,43 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { Card, Button, Avatar, Chip } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import LanguageSwitch from "../components/common/LanguageSwitch";
 
 const { width } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const features = [
     {
       icon: "brain-outline",
-      title: "AI Destekli Öğrenme",
-      description: "Yapay zeka ile kişiselleştirilmiş öğrenme deneyimi",
+      title: t("home.features.aiLearning.title"),
+      description: t("home.features.aiLearning.description"),
     },
     {
       icon: "code-slash-outline",
-      title: "İnteraktif Kod Editörü",
-      description: "Gerçek zamanlı compiler ile kodlarınızı test edin",
+      title: t("home.features.interactiveEditor.title"),
+      description: t("home.features.interactiveEditor.description"),
     },
     {
       icon: "people-outline",
-      title: "Aktif Topluluk",
-      description: "Binlerce öğrenci ile birlikte öğrenin",
+      title: t("home.features.activeCommunity.title"),
+      description: t("home.features.activeCommunity.description"),
     },
     {
       icon: "trophy-outline",
-      title: "Gamifikasyon",
-      description: "Rozetler kazanın, seviye atlayın",
+      title: t("home.features.gamification.title"),
+      description: t("home.features.gamification.description"),
     },
   ];
 
   const popularCourses = [
     {
       id: 1,
-      title: "C Programlama Temelleri",
-      description: "Sıfırdan başlayarak C programlama dilini öğrenin",
+      title: t("home.popularCourses.cFoundations.title"),
+      description: t("home.popularCourses.cFoundations.description"),
       students: 1247,
       rating: 4.8,
       duration: "6 hafta",
