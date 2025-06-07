@@ -1,0 +1,181 @@
+{
+  "navigation": {
+    "home": "Home",
+    "courses": "Courses",
+    "exercises": "Exercises",
+    "aiChat": "AI Chat",
+    "profile": "Profile",
+    "codeEditor": "Code Editor",
+    "quiz": "Quiz",
+    "forum": "Forum",
+    "progress": "Progress",
+    "aiMentor": "AI Mentor",
+    "courseDetail": "Course Detail",
+    "learn": "Learn",
+    "aiSupport": "AI Support",
+    "community": "Community"
+  },
+  "home": {
+    "title": "CodeMentor AI",
+    "subtitle": "The Best Way to Learn C/C++ Programming",
+    "description": "Learn C and C++ programming languages from scratch with our AI-powered interactive platform. Build projects, gain experience.",
+    "getStarted": "Get Started",
+    "watchDemo": "Watch Demo",
+    "stats": {
+      "users": "Users",
+      "courses": "Courses",
+      "exercises": "Exercises",
+      "successRate": "Success Rate"
+    },
+    "features": {
+      "aiLearning": {
+        "title": "AI-Powered Learning",
+        "description": "Personalized learning experience with artificial intelligence"
+      },
+      "interactiveEditor": {
+        "title": "Interactive Code Editor",
+        "description": "Test your code with real-time compiler"
+      },
+      "activeCommunity": {
+        "title": "Active Community",
+        "description": "Learn together with thousands of students"
+      },
+      "gamification": {
+        "title": "Gamification",
+        "description": "Earn badges, level up"
+      }
+    },
+    "popularCourses": {
+      "title": "Popular Courses",
+      "cFoundations": {
+        "title": "C Programming Foundations",
+        "description": "Learn C programming language starting from scratch"
+      },
+      "cppOop": {
+        "title": "C++ and Object-Oriented Programming",
+        "description": "Discover modern programming techniques with C++"
+      },
+      "dataStructures": {
+        "title": "Data Structures and Algorithms",
+        "description": "Basic data structures and algorithm analysis"
+      }
+    },
+    "joinCommunity": {
+      "title": "Join CodeMentor AI Community",
+      "description": "Learn with 12,000+ students, share projects and grow together.",
+      "join": "Join Community"
+    }
+  },
+  "courses": {
+    "title": "Courses",
+    "filterBy": "Filter by:",
+    "allLevels": "All Levels",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "allLanguages": "All Languages",
+    "allTopics": "All Topics",
+    "students": "students",
+    "enrolled": "Enrolled",
+    "continue": "Continue",
+    "enroll": "Enroll",
+    "completed": "Completed"
+  },
+  "exercises": {
+    "title": "Exercises",
+    "dailyChallenge": "Daily Challenge",
+    "newChallenge": "New Challenge",
+    "timeRemaining": "Time Remaining",
+    "stats": {
+      "completed": "Completed Exercises",
+      "totalPoints": "Total Points",
+      "dailyStreak": "Daily Streak"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "points": "points",
+    "start": "Start",
+    "premium": "Premium"
+  },
+  "profile": {
+    "achievements": "Achievements",
+    "activity": "Activity",
+    "about": "About",
+    "follow": "Follow",
+    "message": "Message",
+    "coursesCompleted": "Courses Completed",
+    "exercisesSolved": "Exercises Solved",
+    "totalPoints": "Total Points",
+    "joinDate": "Join Date",
+    "level": "Level",
+    "rank": "Rank",
+    "badges": "Badges",
+    "streakDays": "Day Streak"
+  },
+  "aiChat": {
+    "title": "AI Chat",
+    "placeholder": "Ask a question about C/C++...",
+    "send": "Send",
+    "typing": "AI is typing...",
+    "examples": {
+      "title": "Example Questions:",
+      "pointers": "How do pointers work in C?",
+      "classes": "Defining classes in C++",
+      "memory": "How to manage memory?",
+      "debugging": "Is there an error in this code?"
+    }
+  },
+  "login": {
+    "title": "Sign In",
+    "register": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "fullName": "Full Name",
+    "forgotPassword": "Forgot your password?",
+    "loginButton": "Sign In",
+    "registerButton": "Sign Up",
+    "orContinueWith": "Or continue with",
+    "demoUsers": "Demo Users",
+    "quickLogin": "Quick Login"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "share": "Share",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "close": "Close",
+    "open": "Open",
+    "new": "New",
+    "all": "All",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK"
+  },
+  "userLevels": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "expert": "Expert"
+  },
+  "language": {
+    "turkish": "Türkçe",
+    "english": "English"
+  }
+}

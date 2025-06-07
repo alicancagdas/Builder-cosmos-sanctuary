@@ -6,6 +6,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { PaperProvider, MD3DarkTheme } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+
+// Import i18n configuration
+import "./src/i18n";
+import { LanguageProvider } from "./src/contexts/LanguageContext";
 
 // Screens
 import HomeScreen from "./src/screens/HomeScreen";
@@ -41,6 +46,8 @@ const customTheme = {
 };
 
 function MainTabs() {
+  const { t } = useTranslation();
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -48,19 +55,19 @@ function MainTabs() {
           let iconName: keyof typeof Ionicons.glyphMap = "home";
 
           switch (route.name) {
-            case "Ana Sayfa":
+            case t("navigation.home"):
               iconName = focused ? "home" : "home-outline";
               break;
-            case "Kurslar":
+            case t("navigation.courses"):
               iconName = focused ? "book" : "book-outline";
               break;
-            case "Alıştırmalar":
+            case t("navigation.exercises"):
               iconName = focused ? "code-slash" : "code-slash-outline";
               break;
-            case "AI Chat":
+            case t("navigation.aiChat"):
               iconName = focused ? "chatbubble" : "chatbubble-outline";
               break;
-            case "Profil":
+            case t("navigation.profile"):
               iconName = focused ? "person" : "person-outline";
               break;
           }
@@ -91,87 +98,100 @@ function MainTabs() {
         },
       })}
     >
-      <Tab.Screen name="Ana Sayfa" component={HomeScreen} />
-      <Tab.Screen name="Kurslar" component={CoursesScreen} />
-      <Tab.Screen name="Alıştırmalar" component={ExercisesScreen} />
-      <Tab.Screen name="AI Chat" component={AIChatScreen} />
-      <Tab.Screen name="Profil" component={ProfileScreen} />
+      <Tab.Screen name={t("navigation.home")} component={HomeScreen} />
+      <Tab.Screen name={t("navigation.courses")} component={CoursesScreen} />
+      <Tab.Screen
+        name={t("navigation.exercises")}
+        component={ExercisesScreen}
+      />
+      <Tab.Screen name={t("navigation.aiChat")} component={AIChatScreen} />
+      <Tab.Screen name={t("navigation.profile")} component={ProfileScreen} />
     </Tab.Navigator>
+  );
+}
+
+function AppNavigator() {
+  const { t } = useTranslation();
+
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#0f172a",
+        },
+        headerTintColor: "#f9fafb",
+        headerTitleStyle: {
+          fontWeight: "600",
+        },
+      }}
+    >
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Main"
+        component={MainTabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CodeEditor"
+        component={CodeEditorScreen}
+        options={{ title: t("navigation.codeEditor") }}
+      />
+      <Stack.Screen
+        name="Quiz"
+        component={QuizScreen}
+        options={{ title: t("navigation.quiz") }}
+      />
+      <Stack.Screen
+        name="Forum"
+        component={ForumScreen}
+        options={{ title: t("navigation.forum") }}
+      />
+      <Stack.Screen
+        name="Progress"
+        component={ProgressScreen}
+        options={{ title: t("navigation.progress") }}
+      />
+      <Stack.Screen
+        name="AIMentor"
+        component={AIMentorScreen}
+        options={{ title: t("navigation.aiMentor") }}
+      />
+      <Stack.Screen
+        name="CourseDetail"
+        component={CourseDetailScreen}
+        options={{ title: t("navigation.courseDetail") }}
+      />
+    </Stack.Navigator>
   );
 }
 
 export default function App() {
   return (
-    <PaperProvider theme={customTheme}>
-      <SafeAreaProvider>
-        <NavigationContainer
-          theme={{
-            dark: true,
-            colors: {
-              primary: "#3b82f6",
-              background: "#030712",
-              card: "#0f172a",
-              text: "#f9fafb",
-              border: "#334155",
-              notification: "#3b82f6",
-            },
-          }}
-        >
-          <Stack.Navigator
-            screenOptions={{
-              headerStyle: {
-                backgroundColor: "#0f172a",
-              },
-              headerTintColor: "#f9fafb",
-              headerTitleStyle: {
-                fontWeight: "600",
+    <LanguageProvider>
+      <PaperProvider theme={customTheme}>
+        <SafeAreaProvider>
+          <NavigationContainer
+            theme={{
+              dark: true,
+              colors: {
+                primary: "#3b82f6",
+                background: "#030712",
+                card: "#0f172a",
+                text: "#f9fafb",
+                border: "#334155",
+                notification: "#3b82f6",
               },
             }}
           >
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Main"
-              component={MainTabs}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="CodeEditor"
-              component={CodeEditorScreen}
-              options={{ title: "Kod Editörü" }}
-            />
-            <Stack.Screen
-              name="Quiz"
-              component={QuizScreen}
-              options={{ title: "Quiz" }}
-            />
-            <Stack.Screen
-              name="Forum"
-              component={ForumScreen}
-              options={{ title: "Forum" }}
-            />
-            <Stack.Screen
-              name="Progress"
-              component={ProgressScreen}
-              options={{ title: "İlerleme" }}
-            />
-            <Stack.Screen
-              name="AIMentor"
-              component={AIMentorScreen}
-              options={{ title: "AI Mentor" }}
-            />
-            <Stack.Screen
-              name="CourseDetail"
-              component={CourseDetailScreen}
-              options={{ title: "Kurs Detayı" }}
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
-        <StatusBar style="light" backgroundColor="#030712" />
-      </SafeAreaProvider>
-    </PaperProvider>
+            <AppNavigator />
+          </NavigationContainer>
+          <StatusBar style="light" backgroundColor="#030712" />
+        </SafeAreaProvider>
+      </PaperProvider>
+    </LanguageProvider>
   );
 }

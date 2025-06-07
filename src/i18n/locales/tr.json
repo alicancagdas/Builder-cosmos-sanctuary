@@ -1,0 +1,181 @@
+{
+  "navigation": {
+    "home": "Ana Sayfa",
+    "courses": "Kurslar",
+    "exercises": "Alıştırmalar",
+    "aiChat": "AI Chat",
+    "profile": "Profil",
+    "codeEditor": "Kod Editörü",
+    "quiz": "Quiz",
+    "forum": "Forum",
+    "progress": "İlerleme",
+    "aiMentor": "AI Mentor",
+    "courseDetail": "Kurs Detayı",
+    "learn": "Öğren",
+    "aiSupport": "AI Destek",
+    "community": "Topluluk"
+  },
+  "home": {
+    "title": "CodeMentor AI",
+    "subtitle": "C/C++ Programlama Öğrenmenin En İyi Yolu",
+    "description": "Yapay zeka destekli interaktif platform ile C ve C++ programlama dillerini sıfırdan öğrenin. Projeler yapın, deneyim kazanın.",
+    "getStarted": "Hemen Başla",
+    "watchDemo": "Demo İzle",
+    "stats": {
+      "users": "Kullanıcı",
+      "courses": "Kurs",
+      "exercises": "Alıştırma",
+      "successRate": "Başarı Oranı"
+    },
+    "features": {
+      "aiLearning": {
+        "title": "AI Destekli Öğrenme",
+        "description": "Yapay zeka ile kişiselleştirilmiş öğrenme deneyimi"
+      },
+      "interactiveEditor": {
+        "title": "İnteraktif Kod Editörü",
+        "description": "Gerçek zamanlı compiler ile kodlarınızı test edin"
+      },
+      "activeCommunity": {
+        "title": "Aktif Topluluk",
+        "description": "Binlerce öğrenci ile birlikte öğrenin"
+      },
+      "gamification": {
+        "title": "Gamifikasyon",
+        "description": "Rozetler kazanın, seviye atlayın"
+      }
+    },
+    "popularCourses": {
+      "title": "Popüler Kurslar",
+      "cFoundations": {
+        "title": "C Programlama Temelleri",
+        "description": "Sıfırdan başlayarak C programlama dilini öğrenin"
+      },
+      "cppOop": {
+        "title": "C++ ve Nesne Yönelimli Programlama",
+        "description": "C++ ile modern programlama tekniklerini keşfedin"
+      },
+      "dataStructures": {
+        "title": "Veri Yapıları ve Algoritmalar",
+        "description": "Temel veri yapıları ve algoritma analizi"
+      }
+    },
+    "joinCommunity": {
+      "title": "CodeMentor AI Topluluğuna Katılın",
+      "description": "12,000+ öğrenci ile birlikte öğrenin, projeler paylaşın ve birlikte büyüyün.",
+      "join": "Topluluğa Katıl"
+    }
+  },
+  "courses": {
+    "title": "Kurslar",
+    "filterBy": "Filtrele:",
+    "allLevels": "Tüm Seviyeler",
+    "beginner": "Başlangıç",
+    "intermediate": "Orta",
+    "advanced": "İleri",
+    "allLanguages": "Tüm Diller",
+    "allTopics": "Tüm Konular",
+    "students": "öğrenci",
+    "enrolled": "Kayıtlı",
+    "continue": "Devam Et",
+    "enroll": "Kaydol",
+    "completed": "Tamamlandı"
+  },
+  "exercises": {
+    "title": "Alıştırmalar",
+    "dailyChallenge": "Günlük Meydan Okuma",
+    "newChallenge": "Yeni Meydan Okuma",
+    "timeRemaining": "Kalan Süre",
+    "stats": {
+      "completed": "Tamamlanan Alıştırmalar",
+      "totalPoints": "Toplam Puan",
+      "dailyStreak": "Günlük Seri"
+    },
+    "difficulty": {
+      "easy": "Kolay",
+      "medium": "Orta",
+      "hard": "Zor"
+    },
+    "points": "puan",
+    "start": "Başla",
+    "premium": "Premium"
+  },
+  "profile": {
+    "achievements": "Başarılar",
+    "activity": "Aktivite",
+    "about": "Hakkında",
+    "follow": "Takip Et",
+    "message": "Mesaj",
+    "coursesCompleted": "Tamamlanan Kurslar",
+    "exercisesSolved": "Çözülen Alıştırmalar",
+    "totalPoints": "Toplam Puan",
+    "joinDate": "Katılım Tarihi",
+    "level": "Seviye",
+    "rank": "Sıralama",
+    "badges": "Rozetler",
+    "streakDays": "Gün Seri"
+  },
+  "aiChat": {
+    "title": "AI Chat",
+    "placeholder": "C/C++ hakkında bir soru sorun...",
+    "send": "Gönder",
+    "typing": "AI yazıyor...",
+    "examples": {
+      "title": "Örnek Sorular:",
+      "pointers": "C'de pointer'lar nasıl çalışır?",
+      "classes": "C++'da class tanımlama",
+      "memory": "Bellek yönetimi nasıl yapılır?",
+      "debugging": "Bu kodda hata var mı?"
+    }
+  },
+  "login": {
+    "title": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifreyi Onayla",
+    "fullName": "Ad Soyad",
+    "forgotPassword": "Şifreni mi unuttun?",
+    "loginButton": "Giriş Yap",
+    "registerButton": "Kayıt Ol",
+    "orContinueWith": "Veya devam et",
+    "demoUsers": "Demo Kullanıcılar",
+    "quickLogin": "Hızlı Giriş"
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "retry": "Tekrar Dene",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "share": "Paylaş",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "sort": "Sırala",
+    "refresh": "Yenile",
+    "back": "Geri",
+    "next": "İleri",
+    "previous": "Önceki",
+    "finish": "Bitir",
+    "close": "Kapat",
+    "open": "Aç",
+    "new": "Yeni",
+    "all": "Tümü",
+    "none": "Hiçbiri",
+    "yes": "Evet",
+    "no": "Hayır",
+    "ok": "Tamam"
+  },
+  "userLevels": {
+    "beginner": "Başlangıç",
+    "intermediate": "Orta",
+    "advanced": "İleri",
+    "expert": "Uzman"
+  },
+  "language": {
+    "turkish": "Türkçe",
+    "english": "English"
+  }
+}
