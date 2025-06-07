@@ -34,40 +34,35 @@ const HomeScreen = () => {
   const [heroScale] = useState(new Animated.Value(0.9));
 
   useEffect(() => {
-    // Hero entrance animation
+    // Hero entrance animation - simplified for web compatibility
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 1500,
-        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 1200,
-        easing: Easing.out(Easing.back(1.2)),
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
         duration: 1000,
-        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
       Animated.timing(heroScale, {
         toValue: 1,
         duration: 1500,
-        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
     ]).start();
 
-    // Continuous animations
+    // Continuous animations - simplified
     const rotateAnimation = Animated.loop(
       Animated.timing(rotateAnim, {
         toValue: 1,
         duration: 20000,
-        easing: Easing.linear,
         useNativeDriver: true,
       }),
     );
@@ -77,13 +72,11 @@ const HomeScreen = () => {
         Animated.timing(pulseAnim, {
           toValue: 1.05,
           duration: 2000,
-          easing: Easing.inOut(Easing.sine),
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
           duration: 2000,
-          easing: Easing.inOut(Easing.sine),
           useNativeDriver: true,
         }),
       ]),
@@ -94,13 +87,11 @@ const HomeScreen = () => {
         Animated.timing(floatAnim, {
           toValue: 1,
           duration: 3000,
-          easing: Easing.inOut(Easing.sine),
           useNativeDriver: true,
         }),
         Animated.timing(floatAnim, {
           toValue: 0,
           duration: 3000,
-          easing: Easing.inOut(Easing.sine),
           useNativeDriver: true,
         }),
       ]),
@@ -244,7 +235,6 @@ const HomeScreen = () => {
         Animated.timing(cardScale, {
           toValue: 1,
           duration: 200,
-          easing: Easing.out(Easing.back(1.5)),
           useNativeDriver: true,
         }),
         Animated.timing(cardRotate, {
@@ -336,7 +326,6 @@ const HomeScreen = () => {
         Animated.timing(cardScale, {
           toValue: 1,
           duration: 200,
-          easing: Easing.out(Easing.back(1.5)),
           useNativeDriver: true,
         }),
       ]).start();
