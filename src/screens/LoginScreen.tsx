@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Alert,
   ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
 } from "react-native";
+import { TextInput, Button, Card, Chip } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import { Card, Button, Checkbox, Chip } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import { authService } from "../services/authService";
+import LanguageSwitch from "../components/common/LanguageSwitch";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
