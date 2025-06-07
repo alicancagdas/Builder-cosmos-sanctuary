@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -9,67 +9,20 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { Card, Button, Avatar, Chip } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-<<<<<<< HEAD
 import { useTranslation } from "react-i18next";
 import LanguageSwitch from "../components/common/LanguageSwitch";
-=======
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-  withSequence,
-  withDelay,
-} from "react-native-reanimated";
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
 
-import AnimatedBackground from "../components/AnimatedBackground";
-import AnimatedCard from "../components/AnimatedCard";
-import FloatingActionButton from "../components/FloatingActionButton";
-import AnimatedProgress from "../components/AnimatedProgress";
-
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
 
-  // Animation values
-  const headerOpacity = useSharedValue(0);
-  const headerTranslateY = useSharedValue(-50);
-  const statsScale = useSharedValue(0.8);
-
-  useEffect(() => {
-    // Entrance animations
-    headerOpacity.value = withTiming(1, { duration: 800 });
-    headerTranslateY.value = withSpring(0, {
-      damping: 15,
-      stiffness: 100,
-    });
-
-    statsScale.value = withDelay(
-      300,
-      withSpring(1, {
-        damping: 12,
-        stiffness: 120,
-      }),
-    );
-  }, []);
-
-  const headerAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: headerOpacity.value,
-    transform: [{ translateY: headerTranslateY.value }],
-  }));
-
-  const statsAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: statsScale.value }],
-  }));
-
   const features = [
     {
       icon: "brain-outline",
-<<<<<<< HEAD
       title: t("home.features.aiLearning.title"),
       description: t("home.features.aiLearning.description"),
     },
@@ -87,33 +40,6 @@ const HomeScreen = () => {
       icon: "trophy-outline",
       title: t("home.features.gamification.title"),
       description: t("home.features.gamification.description"),
-=======
-      title: "AI Destekli Öğrenme",
-      description: "Yapay zeka ile kişiselleştirilmiş öğrenme deneyimi",
-      color: "#3b82f6",
-      gradient: ["#3b82f6", "#1d4ed8"],
-    },
-    {
-      icon: "code-slash-outline",
-      title: "İnteraktif Kod Editörü",
-      description: "Gerçek zamanlı compiler ile kodlarınızı test edin",
-      color: "#8b5cf6",
-      gradient: ["#8b5cf6", "#7c3aed"],
-    },
-    {
-      icon: "people-outline",
-      title: "Aktif Topluluk",
-      description: "Binlerce öğrenci ile birlikte öğrenin",
-      color: "#06b6d4",
-      gradient: ["#06b6d4", "#0891b2"],
-    },
-    {
-      icon: "trophy-outline",
-      title: "Gamifikasyon",
-      description: "Rozetler kazanın, seviye atlayın",
-      color: "#10b981",
-      gradient: ["#10b981", "#059669"],
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
     },
   ];
 
@@ -124,14 +50,12 @@ const HomeScreen = () => {
       description: t("home.popularCourses.cFoundations.description"),
       students: 1247,
       rating: 4.8,
-      progress: 65,
-      level: "Başlangıç",
-      duration: "8 hafta",
-      gradient: ["#3b82f6", "#1d4ed8"],
+      duration: "6 hafta",
+      level: t("userLevels.beginner"),
+      color: "#10b981",
     },
     {
       id: 2,
-<<<<<<< HEAD
       title: t("home.popularCourses.cppOop.title"),
       description: t("home.popularCourses.cppOop.description"),
       students: 892,
@@ -149,32 +73,10 @@ const HomeScreen = () => {
       duration: "10 hafta",
       level: t("userLevels.advanced"),
       color: "#ef4444",
-=======
-      title: "C++ Nesne Yönelimli Programlama",
-      description: "Modern C++ ile ileri seviye programlama teknikleri",
-      students: 892,
-      rating: 4.9,
-      progress: 45,
-      level: "Orta",
-      duration: "12 hafta",
-      gradient: ["#8b5cf6", "#7c3aed"],
-    },
-    {
-      id: 3,
-      title: "Veri Yapıları ve Algoritmalar",
-      description: "Temel veri yapıları ve algoritma analizi",
-      students: 634,
-      rating: 4.7,
-      progress: 30,
-      level: "İleri",
-      duration: "10 hafta",
-      gradient: ["#06b6d4", "#0891b2"],
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
     },
   ];
 
   const stats = [
-<<<<<<< HEAD
     { label: t("home.stats.users"), value: "12,847", icon: "people" },
     { label: t("home.stats.courses"), value: "25+", icon: "book" },
     { label: t("home.stats.exercises"), value: "500+", icon: "code-slash" },
@@ -207,112 +109,10 @@ const HomeScreen = () => {
                 color="#f9fafb"
               />
             </TouchableOpacity>
-=======
-    {
-      label: "Aktif Öğrenci",
-      value: "12,847",
-      icon: "people",
-      color: "#3b82f6",
-    },
-    { label: "Kurs Sayısı", value: "25+", icon: "book", color: "#8b5cf6" },
-    { label: "Alıştırma", value: "500+", icon: "code-slash", color: "#06b6d4" },
-    { label: "Başarı Oranı", value: "%95", icon: "trophy", color: "#10b981" },
-  ];
-
-  const renderStatCard = (stat, index) => (
-    <AnimatedCard
-      key={stat.label}
-      delay={index * 100}
-      gradientColors={[`${stat.color}20`, `${stat.color}10`]}
-      shadowColor={stat.color}
-      style={styles.statCard}
-    >
-      <View style={styles.statContent}>
-        <LinearGradient
-          colors={[stat.color, `${stat.color}80`]}
-          style={styles.statIconContainer}
-        >
-          <Ionicons name={stat.icon} size={24} color="white" />
-        </LinearGradient>
-        <Text style={styles.statValue}>{stat.value}</Text>
-        <Text style={styles.statLabel}>{stat.label}</Text>
-      </View>
-    </AnimatedCard>
-  );
-
-  const renderFeatureCard = (feature, index) => (
-    <AnimatedCard
-      key={feature.title}
-      delay={index * 150}
-      gradientColors={[`${feature.color}20`, `${feature.color}10`]}
-      shadowColor={feature.color}
-      style={styles.featureCard}
-    >
-      <View style={styles.featureContent}>
-        <LinearGradient colors={feature.gradient} style={styles.featureIcon}>
-          <Ionicons name={feature.icon} size={32} color="white" />
-        </LinearGradient>
-        <Text style={styles.featureTitle}>{feature.title}</Text>
-        <Text style={styles.featureDescription}>{feature.description}</Text>
-      </View>
-    </AnimatedCard>
-  );
-
-  const renderCourseCard = (course, index) => (
-    <AnimatedCard
-      key={course.id}
-      delay={index * 200}
-      gradientColors={[`${course.gradient[0]}20`, `${course.gradient[1]}10`]}
-      shadowColor={course.gradient[0]}
-      style={styles.courseCard}
-      onPress={() => navigation.navigate("CourseDetail", { course })}
-    >
-      <LinearGradient colors={course.gradient} style={styles.courseHeader}>
-        <View style={styles.courseLevel}>
-          <Text style={styles.courseLevelText}>{course.level}</Text>
-        </View>
-        <Text style={styles.courseRating}>
-          <Ionicons name="star" size={16} color="#fbbf24" /> {course.rating}
-        </Text>
-      </LinearGradient>
-
-      <View style={styles.courseContent}>
-        <Text style={styles.courseTitle}>{course.title}</Text>
-        <Text style={styles.courseDescription}>{course.description}</Text>
-
-        <View style={styles.courseInfo}>
-          <View style={styles.courseDetail}>
-            <Ionicons name="time-outline" size={16} color="#9ca3af" />
-            <Text style={styles.courseDetailText}>{course.duration}</Text>
-          </View>
-          <View style={styles.courseDetail}>
-            <Ionicons name="people-outline" size={16} color="#9ca3af" />
-            <Text style={styles.courseDetailText}>{course.students}</Text>
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
           </View>
         </View>
 
-        <AnimatedProgress
-          progress={course.progress}
-          label="İlerleme"
-          height={6}
-          colors={course.gradient}
-        />
-      </View>
-    </AnimatedCard>
-  );
-
-  return (
-    <View style={styles.container}>
-      <AnimatedBackground variant="home" />
-
-      <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
         {/* Hero Section */}
-<<<<<<< HEAD
         <View style={styles.heroSection}>
           <Text style={styles.heroTitle}>{t("home.subtitle")}</Text>
           <Text style={styles.heroDescription}>{t("home.description")}</Text>
@@ -332,95 +132,8 @@ const HomeScreen = () => {
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
-=======
-        <Animated.View style={[styles.heroSection, headerAnimatedStyle]}>
-          <LinearGradient
-            colors={["rgba(59, 130, 246, 0.1)", "transparent"]}
-            style={styles.heroGradient}
-          >
-            <View style={styles.heroContent}>
-              <Text style={styles.heroTitle}>
-                CodeMentor AI ile{"\n"}
-                <Text style={styles.heroTitleHighlight}>
-                  Programlamayı Öğren
-                </Text>
-              </Text>
-              <Text style={styles.heroSubtitle}>
-                Yapay zeka destekli öğrenme platformu ile C/C++ programlama
-                dillerinde uzmanlaş
-              </Text>
 
-              <TouchableOpacity
-                style={styles.heroButton}
-                onPress={() => navigation.navigate("Courses")}
-              >
-                <LinearGradient
-                  colors={["#3b82f6", "#1d4ed8"]}
-                  style={styles.heroButtonGradient}
-                >
-                  <Text style={styles.heroButtonText}>Öğrenmeye Başla</Text>
-                  <Ionicons name="arrow-forward" size={20} color="white" />
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          </LinearGradient>
-        </Animated.View>
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
-
-        {/* Stats Section */}
-        <Animated.View style={[styles.statsSection, statsAnimatedStyle]}>
-          <Text style={styles.sectionTitle}>Platform İstatistikleri</Text>
-          <View style={styles.statsGrid}>
-            {stats.map((stat, index) => renderStatCard(stat, index))}
-          </View>
-        </Animated.View>
-
-        {/* Features Section */}
-        <View style={styles.featuresSection}>
-          <Text style={styles.sectionTitle}>Özellikler</Text>
-          <View style={styles.featuresGrid}>
-            {features.map((feature, index) =>
-              renderFeatureCard(feature, index),
-            )}
-          </View>
-        </View>
-
-        {/* Popular Courses Section */}
-        <View style={styles.coursesSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Popüler Kurslar</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Courses")}>
-              <Text style={styles.viewAllText}>Tümünü Gör</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.coursesScrollContent}
-          >
-            {popularCourses.map((course, index) =>
-              renderCourseCard(course, index),
-            )}
-          </ScrollView>
-        </View>
-
-        {/* CTA Section */}
-        <AnimatedCard
-          delay={800}
-          gradientColors={["rgba(59, 130, 246, 0.2)", "rgba(29, 78, 216, 0.1)"]}
-          shadowColor="#3b82f6"
-          style={styles.ctaSection}
-        >
-          <LinearGradient
-            colors={["#3b82f6", "#1d4ed8"]}
-            style={styles.ctaGradient}
-          >
-            <Text style={styles.ctaTitle}>AI Mentor ile Öğren</Text>
-            <Text style={styles.ctaSubtitle}>
-              Kişisel AI asistanın ile 7/24 soru sor, kod yaz ve öğren
-            </Text>
             <TouchableOpacity
-<<<<<<< HEAD
               style={styles.secondaryButton}
               onPress={() => navigation.navigate(t("navigation.aiChat"))}
             >
@@ -428,19 +141,11 @@ const HomeScreen = () => {
               <Text style={styles.secondaryButtonText}>
                 {t("home.watchDemo")}
               </Text>
-=======
-              style={styles.ctaButton}
-              onPress={() => navigation.navigate("AI Chat")}
-            >
-              <Text style={styles.ctaButtonText}>AI Chat'i Dene</Text>
-              <Ionicons name="chatbubble-ellipses" size={20} color="#3b82f6" />
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
             </TouchableOpacity>
-          </LinearGradient>
-        </AnimatedCard>
-      </ScrollView>
+          </View>
+        </View>
+      </LinearGradient>
 
-<<<<<<< HEAD
       {/* Stats Section */}
       <View style={styles.statsContainer}>
         {stats.map((stat, index) => (
@@ -578,15 +283,6 @@ const HomeScreen = () => {
         </TouchableOpacity>
       </LinearGradient>
     </ScrollView>
-=======
-      {/* Floating Action Button */}
-      <FloatingActionButton
-        icon="add"
-        onPress={() => navigation.navigate("Exercises")}
-        colors={["#10b981", "#059669"]}
-      />
-    </View>
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
   );
 };
 
@@ -595,19 +291,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#030712",
   },
-  scrollView: {
-    flex: 1,
+  headerGradient: {
+    paddingTop: 20,
+    paddingBottom: 40,
   },
-  scrollContent: {
-    paddingBottom: 100,
-  },
-  heroSection: {
-    height: height * 0.45,
-    justifyContent: "center",
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
+    paddingBottom: 20,
   },
-<<<<<<< HEAD
   headerActions: {
     flexDirection: "row",
     alignItems: "center",
@@ -624,103 +318,134 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 12,
-=======
-  heroGradient: {
-    flex: 1,
-    width: "100%",
->>>>>>> c5963db972168cdc1574b84ea652377b7ba4d4b4
     justifyContent: "center",
     alignItems: "center",
   },
-  heroContent: {
+  logoText: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#f9fafb",
+    marginLeft: 12,
+  },
+  notificationButton: {
+    padding: 8,
+  },
+  heroSection: {
+    paddingHorizontal: 20,
     alignItems: "center",
-    textAlign: "center",
   },
   heroTitle: {
     fontSize: 32,
-    fontWeight: "800",
-    color: "#ffffff",
+    fontWeight: "700",
+    color: "#f9fafb",
     textAlign: "center",
     marginBottom: 16,
     lineHeight: 40,
   },
-  heroTitleHighlight: {
-    color: "#3b82f6",
-  },
-  heroSubtitle: {
+  heroDescription: {
     fontSize: 16,
-    color: "#9ca3af",
+    color: "#94a3b8",
     textAlign: "center",
     marginBottom: 32,
     lineHeight: 24,
     paddingHorizontal: 20,
   },
-  heroButton: {
-    borderRadius: 30,
-    overflow: "hidden",
-    shadowColor: "#3b82f6",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
+  heroButtons: {
+    flexDirection: "row",
+    gap: 12,
   },
-  heroButtonGradient: {
+  primaryButton: {
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  buttonGradient: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 32,
-    paddingVertical: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     gap: 8,
   },
-  heroButtonText: {
-    fontSize: 16,
-    fontWeight: "700",
+  primaryButtonText: {
     color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
-  statsSection: {
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#ffffff",
-    marginBottom: 20,
-  },
-  statsGrid: {
+  secondaryButton: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 12,
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#3b82f6",
+    gap: 8,
+  },
+  secondaryButtonText: {
+    color: "#3b82f6",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  statsContainer: {
+    flexDirection: "row",
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    gap: 16,
   },
   statCard: {
     flex: 1,
-    minWidth: (width - 56) / 2,
-    padding: 20,
-  },
-  statContent: {
+    backgroundColor: "#0f172a",
+    borderRadius: 12,
+    padding: 16,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#1e293b",
   },
   statIconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
+    backgroundColor: "rgba(59, 130, 246, 0.1)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
   },
   statValue: {
     fontSize: 20,
-    fontWeight: "800",
-    color: "#ffffff",
+    fontWeight: "700",
+    color: "#f9fafb",
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: "#64748b",
     textAlign: "center",
   },
-  featuresSection: {
+  section: {
     paddingHorizontal: 20,
-    marginTop: 40,
+    paddingVertical: 24,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "#f9fafb",
+    marginBottom: 8,
+  },
+  sectionDescription: {
+    fontSize: 16,
+    color: "#94a3b8",
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  seeAllText: {
+    fontSize: 16,
+    color: "#3b82f6",
+    fontWeight: "600",
   },
   featuresGrid: {
     flexDirection: "row",
@@ -728,144 +453,128 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   featureCard: {
-    flex: 1,
-    minWidth: (width - 56) / 2,
-    padding: 20,
+    width: (width - 56) / 2,
+    backgroundColor: "#0f172a",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#1e293b",
   },
   featureContent: {
     alignItems: "center",
+    paddingVertical: 20,
   },
-  featureIcon: {
+  featureIconContainer: {
     width: 64,
     height: 64,
     borderRadius: 32,
+    backgroundColor: "rgba(59, 130, 246, 0.1)",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
   },
   featureTitle: {
     fontSize: 16,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontWeight: "600",
+    color: "#f9fafb",
     textAlign: "center",
     marginBottom: 8,
   },
   featureDescription: {
-    fontSize: 12,
-    color: "#9ca3af",
-    textAlign: "center",
-    lineHeight: 18,
-  },
-  coursesSection: {
-    marginTop: 40,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  viewAllText: {
     fontSize: 14,
-    color: "#3b82f6",
-    fontWeight: "600",
+    color: "#94a3b8",
+    textAlign: "center",
+    lineHeight: 20,
   },
-  coursesScrollContent: {
-    paddingHorizontal: 20,
-    gap: 16,
+  coursesScrollView: {
+    paddingLeft: 20,
   },
   courseCard: {
-    width: width * 0.8,
+    width: 280,
+    backgroundColor: "#0f172a",
+    borderRadius: 16,
+    marginRight: 16,
+    borderWidth: 1,
+    borderColor: "#1e293b",
     overflow: "hidden",
   },
-  courseHeader: {
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
+  courseCardGradient: {
+    height: 120,
+    justifyContent: "center",
     alignItems: "center",
   },
-  courseLevel: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+  courseContent: {
+    padding: 16,
   },
-  courseLevelText: {
+  levelChip: {
+    alignSelf: "flex-start",
+    marginBottom: 12,
+    backgroundColor: "transparent",
+  },
+  chipText: {
     fontSize: 12,
     fontWeight: "600",
-    color: "white",
-  },
-  courseRating: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "white",
-  },
-  courseContent: {
-    padding: 20,
   },
   courseTitle: {
     fontSize: 18,
-    fontWeight: "700",
-    color: "#ffffff",
+    fontWeight: "600",
+    color: "#f9fafb",
     marginBottom: 8,
   },
   courseDescription: {
     fontSize: 14,
-    color: "#9ca3af",
-    marginBottom: 16,
+    color: "#94a3b8",
     lineHeight: 20,
-  },
-  courseInfo: {
-    flexDirection: "row",
-    gap: 16,
     marginBottom: 16,
   },
-  courseDetail: {
+  courseStats: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  courseStat: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  courseDetailText: {
+  courseStatText: {
     fontSize: 12,
-    color: "#9ca3af",
+    color: "#64748b",
   },
   ctaSection: {
-    marginHorizontal: 20,
-    marginTop: 40,
-    overflow: "hidden",
-  },
-  ctaGradient: {
+    margin: 20,
+    borderRadius: 20,
     padding: 32,
     alignItems: "center",
   },
   ctaTitle: {
     fontSize: 24,
-    fontWeight: "800",
+    fontWeight: "700",
     color: "white",
     textAlign: "center",
     marginBottom: 12,
   },
-  ctaSubtitle: {
+  ctaDescription: {
     fontSize: 16,
     color: "rgba(255, 255, 255, 0.9)",
     textAlign: "center",
-    marginBottom: 24,
     lineHeight: 24,
+    marginBottom: 24,
   },
   ctaButton: {
     backgroundColor: "white",
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  ctaButtonContent: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 24,
     gap: 8,
   },
   ctaButtonText: {
-    fontSize: 16,
-    fontWeight: "700",
     color: "#3b82f6",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 
