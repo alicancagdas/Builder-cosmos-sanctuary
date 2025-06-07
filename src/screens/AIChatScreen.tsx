@@ -304,24 +304,71 @@ const AIChatScreen = () => {
 
       {/* Suggested Questions */}
       {messages.length === 1 && (
-        <View style={styles.suggestionsContainer}>
-          <Text style={styles.suggestionsTitle}>Örnek Sorular</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={styles.suggestionsScrollView}
-          >
-            {suggestedQuestions.map((question, index) => (
+        <View style={styles.suggestedSection}>
+          <Text style={styles.suggestedTitle}>{t('aiChat.examples.title')}</Text>
+          <View style={styles.suggestedContainer}>
+            {suggestedQuestions.slice(0, 3).map((question, index) => (
               <TouchableOpacity
                 key={index}
-                style={styles.suggestionChip}
+                style={styles.suggestedChip}
                 onPress={() => handleQuestionClick(question)}
               >
-                <Text style={styles.suggestionText}>{question}</Text>
+                <Text style={styles.suggestedText}>{question}</Text>
               </TouchableOpacity>
             ))}
-          </ScrollView>
+          </View>
         </View>
+      )}
+
+      {/* Chat Messages */}
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.messagesContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {messages.map(renderMessage)}
+
+        {isTyping && (
+          <View style={styles.typingContainer}>
+            <Avatar.Icon size={32} icon="robot" style={styles.aiAvatar} />
+            <View style={styles.typingBubble}>
+              <Text style={styles.typingText}>{t('aiChat.typing')}</Text>
+              <View style={styles.typingIndicator}>
+                <View style={[styles.dot, styles.dot1]} />
+                <View style={[styles.dot, styles.dot2]} />
+                <View style={[styles.dot, styles.dot3]} />
+              </View>
+            </View>
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Input Section */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          value={inputMessage}
+          onChangeText={setInputMessage}
+          placeholder={t('aiChat.placeholder')}
+          placeholderTextColor="#64748b"
+          multiline
+          maxLength={500}
+        />
+        <TouchableOpacity
+          style={[
+            styles.sendButton,
+            inputMessage.trim() ? styles.sendButtonActive : null,
+          ]}
+          onPress={handleSendMessage}
+          disabled={!inputMessage.trim() || isTyping}
+        >
+          <Ionicons
+            name="send"
+            size={20}
+            color={inputMessage.trim() ? "#ffffff" : "#64748b"}
+          />
+        </TouchableOpacity>
+      </View>
       )}
 
       {/* Messages */}
