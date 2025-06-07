@@ -37,35 +37,59 @@
 - Node.js (v16 veya üstü)
 - npm veya yarn
 - Expo CLI
+- Docker ve Docker Compose (AI özellikler için)
 - iOS Simulator (Mac) veya Android Emulator
 
-### Kurulum
+### 🐳 Docker ile Kurulum (Önerilen)
+
+```bash
+# 1. Docker Compose ile tüm servisleri başlat
+docker-compose up -d
+
+# 2. Web uygulamasına erişim
+# http://localhost:3000
+
+# 3. Ollama AI API
+# http://localhost:11434
+```
+
+### 💻 Yerel Kurulum
 
 ```bash
 # Bağımlılıkları yükle
 npm install
 
-# veya
-yarn install
+# Web hatalarını düzeltmek için ek paketler
+npx expo install react-native-web@~0.19.6 react-dom@18.2.0 @expo/webpack-config@^19.0.0
 ```
 
-### Çalıştırma
+### 🏃‍♂️ Çalıştırma Seçenekleri
+
+#### Web'de Çalıştır (AI Destekli)
+
+```bash
+# Docker ile AI desteği
+docker-compose up -d ollama  # AI servisi
+npx expo start --web         # Web uygulaması
+
+# Veya tam Docker setup
+docker-compose up -d
+```
+
+#### Mobil Geliştirme
 
 ```bash
 # Geliştirme sunucusunu başlat
-npm start
-
-# veya
-yarn start
+npx expo start
 
 # iOS simülatörde çalıştır
-npm run ios
+npx expo start --ios
 
 # Android emülatörde çalıştır
-npm run android
+npx expo start --android
 
 # Web'de çalıştır
-npm run web
+npx expo start --web
 ```
 
 ## 📁 Proje Yapısı
@@ -161,12 +185,35 @@ npm run web
 - Custom components
 - Reusable patterns
 
+## ✅ Yeni Eklenen Özellikler
+
+### 🤖 AI Entegrasyonu
+
+- **Ollama Llama3** ile gerçek AI desteği
+- C/C++ kod analizi ve açıklama
+- Hata ayıklama yardımı
+- Kişiselleştirilmiş öğrenme önerileri
+
+### 👤 Authentication System
+
+- Mock kullanıcı sistemi
+- Demo hesapları (Beginner, Intermediate, Expert)
+- Kullanıcı profilleri ve istatistikler
+- Local storage persistence
+
+### 🐳 Docker Support
+
+- Multi-stage Docker build
+- Ollama AI servisi otomatik kurulumu
+- Docker Compose ile kolay deployment
+- Production-ready containerization
+
 ## 🚧 Geliştirme Aşamasındaki Özellikler
 
 - [ ] Quiz sistemi implementasyonu
 - [ ] Forum ve topluluk özellikleri
-- [ ] İlerleme takibi ve analitik
-- [ ] AI Mentor detaylı özellikler
+- [ ] Gerçek backend API entegrasyonu
+- [ ] Advanced AI Mentor features
 - [ ] Kod editörü syntax highlighting
 - [ ] Push notification
 - [ ] Offline support
