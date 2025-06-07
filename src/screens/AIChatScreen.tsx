@@ -26,11 +26,15 @@ interface Message {
 }
 
 const AIChatScreen = () => {
+  const { t } = useTranslation();
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content:
+      content: t(
+        "aiChat.welcome",
         "Merhaba! Ben CodeMentor AI. C ve C++ hakkında her türlü sorunuzu cevaplayabilirim. Size nasıl yardımcı olabilirim?",
+      ),
       sender: "ai",
       timestamp: new Date(),
       type: "text",
@@ -42,12 +46,12 @@ const AIChatScreen = () => {
   const scrollViewRef = useRef<ScrollView>(null);
 
   const suggestedQuestions = [
-    "C++ ile pointer nasıl kullanılır?",
-    "Class ve struct arasındaki fark nedir?",
-    "Memory leak nasıl önlenir?",
-    "Virtual function ne işe yarar?",
-    "STL vector nasıl kullanılır?",
-    "Constructor ve destructor nedir?",
+    t("aiChat.examples.pointers"),
+    t("aiChat.examples.classes"),
+    t("aiChat.examples.memory"),
+    t("aiChat.examples.debugging"),
+    t("aiChat.examples.virtual", "Virtual function ne işe yarar?"),
+    t("aiChat.examples.stl", "STL vector nasıl kullanılır?"),
   ];
 
   const quickActions = [
