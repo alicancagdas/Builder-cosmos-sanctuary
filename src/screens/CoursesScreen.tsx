@@ -7,17 +7,24 @@ import {
   StyleSheet,
   FlatList,
   TextInput,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Card, Chip, Button, ProgressBar } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../contexts/ThemeContext";
 import LanguageSwitch from "../components/common/LanguageSwitch";
+
+const { width, height } = Dimensions.get("window");
+const isTablet = width > 768;
+const isMobile = width <= 480;
 
 const CoursesScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all");
   const [selectedLanguage, setSelectedLanguage] = useState("all");
