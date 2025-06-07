@@ -113,37 +113,60 @@ const AIChatScreen = () => {
 
   const generateAIResponse = async (userInput: string): Promise<Message> => {
     try {
-      // Import ollamaService dynamically to avoid import issues
-      const { ollamaService } = await import('../services/ollamaService');
+      // Check if we're in web environment and have access to ollama
+      if (typeof window !== 'undefined') {
+        // Try to make direct API call to Ollama
+        const response = await fetch('http://localhost:11434/api/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'llama3',
+            prompt: `Sen bir C/C++ programlama eğitmenisin. Aşağıdaki soruya Türkçe olarak cevap ver: "${userInput}"`,
+            stream: false,
+            options: {
+              temperature: 0.7,
+            }
+          }),
+        });
 
-      let response: string;
-      let type: 'text' | 'code' = 'text';
+        if (response.ok) {
+          const data = await response.json();
+          return {
+            id: Date.now().toString(),
+            content: data.response || 'AI yanıtı alınamadı.',
+            sender: 'ai',
+            timestamp: new Date(),
+            type: userInput.includes('kod') || userInput.includes('```') ? 'code' : 'text',
+          };
+        }
+      }
 
-      // Check if it's a code-related question
-      if (userInput.includes('kod') || userInput.includes('code') ||
-          userInput.includes('```') || userInput.includes('hata') ||
-          userInput.includes('error')) {
-        response = await ollamaService.generateCodeSuggestion(userInput);
-        type = 'code';
-      } else {
-        response = await ollamaService.generateCodeSuggestion(userInput);
-        type = 'text';
+      // Fallback response
+      throw new Error('API not available');
+    } catch (error) {
+      console.error('AI response error:', error);
+
+      // Mock response for demo
+      const mockResponses = {
+        pointer: 'C++ dilinde pointer, bir değişkenin bellek adresini saklayan özel değişkendir.\n\nint x = 10;\nint* ptr = &x;  // ptr, x\'in adresini saklar\n\n*ptr ile değere erişebilirsiniz.',
+        class: 'C++ dilinde class, nesne yönelimli programlamanın temel yapı taşıdır.\n\nclass MyClass {\nprivate:\n    int value;\npublic:\n    void setValue(int v) { value = v; }\n};',
+        default: 'Bu konuda size yardımcı olmak için Ollama AI servisinin çalışıyor olması gerekiyor. Docker Compose ile Ollama\'yı başlattığınızdan emin olun.'
+      };
+
+      const input = userInput.toLowerCase();
+      let mockContent = mockResponses.default;
+
+      if (input.includes('pointer') || input.includes('işaretçi')) {
+        mockContent = mockResponses.pointer;
+      } else if (input.includes('class') || input.includes('sınıf')) {
+        mockContent = mockResponses.class;
       }
 
       return {
         id: Date.now().toString(),
-        content: response,
-        sender: 'ai',
-        timestamp: new Date(),
-        type,
-      };
-    } catch (error) {
-      console.error('AI response error:', error);
-
-      // Fallback to mock response if Ollama is not available
-      return {
-        id: Date.now().toString(),
-        content: 'AI servisi şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin veya Docker Compose ile Ollama servisini başlattığınızdan emin olun.',
+        content: mockContent,
         sender: 'ai',
         timestamp: new Date(),
         type: 'text',
@@ -167,9 +190,12 @@ const AIChatScreen = () => {
         ]}
       >
         {!isUser && (
-          <Avatar.Icon size={32} icon="robot" style={styles.aiAvatar} />
+          <Avatar.Icon
+            size={32}
+            icon="robot"
+            style={styles.aiAvatar}
+          />
         )}
-
         <View
           style={[
             styles.messageBubble,
