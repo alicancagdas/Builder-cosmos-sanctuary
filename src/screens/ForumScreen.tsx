@@ -14,9 +14,10 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../contexts/ThemeContext";
-import AnimatedBackground from "../components/AnimatedBackground";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+const isTablet = width > 768;
+const isMobile = width <= 480;
 
 const ForumScreen = () => {
   const navigation = useNavigation();
@@ -175,7 +176,27 @@ const ForumScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <AnimatedBackground variant="chat" />
+      {/* Responsive Background Shapes */}
+      <View style={styles.backgroundContainer}>
+        <View
+          style={[
+            styles.backgroundShape1,
+            { backgroundColor: `${colors.primary}08` },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundShape2,
+            { backgroundColor: `${colors.secondary}06` },
+          ]}
+        />
+        <View
+          style={[
+            styles.backgroundShape3,
+            { backgroundColor: `${colors.warning}04` },
+          ]}
+        />
+      </View>
 
       {/* Header */}
       <LinearGradient
@@ -459,29 +480,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  backgroundContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+  },
+  backgroundShape1: {
+    position: "absolute",
+    width: isTablet ? 400 : 300,
+    height: isTablet ? 400 : 300,
+    borderRadius: isTablet ? 200 : 150,
+    top: -100,
+    right: -100,
+  },
+  backgroundShape2: {
+    position: "absolute",
+    width: isTablet ? 300 : 200,
+    height: isTablet ? 300 : 200,
+    borderRadius: isTablet ? 150 : 100,
+    bottom: 200,
+    left: -50,
+  },
+  backgroundShape3: {
+    position: "absolute",
+    width: isTablet ? 200 : 150,
+    height: isTablet ? 200 : 150,
+    borderRadius: isTablet ? 100 : 75,
+    top: height * 0.5,
+    right: -30,
+  },
   header: {
     paddingTop: 60,
     paddingBottom: 30,
-    paddingHorizontal: 20,
+    paddingHorizontal: isMobile ? 20 : isTablet ? 40 : 30,
   },
   headerContent: {
     alignItems: "center",
+    maxWidth: isTablet ? 600 : "100%",
+    alignSelf: "center",
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: isMobile ? 24 : isTablet ? 32 : 28,
     fontWeight: "700",
     color: "white",
     marginBottom: 4,
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: "rgba(255, 255, 255, 0.8)",
     textAlign: "center",
   },
+  headerSubtitle: {
+    fontSize: isMobile ? 14 : isTablet ? 18 : 16,
+    color: "rgba(255, 255, 255, 0.8)",
+    textAlign: "center",
+    maxWidth: isTablet ? 500 : "90%",
+  },
   searchContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: isMobile ? 20 : isTablet ? 40 : 30,
     paddingVertical: 15,
     marginTop: -15,
+    maxWidth: isTablet ? 600 : "100%",
+    alignSelf: "center",
+    width: "100%",
   },
   searchBar: {
     flexDirection: "row",
@@ -497,11 +557,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   categoriesContainer: {
-    paddingLeft: 20,
+    paddingLeft: isMobile ? 20 : isTablet ? 40 : 30,
     marginBottom: 10,
   },
   categoriesContent: {
-    paddingRight: 20,
+    paddingRight: isMobile ? 20 : isTablet ? 40 : 30,
   },
   categoryChip: {
     flexDirection: "row",
@@ -524,7 +584,10 @@ const styles = StyleSheet.create({
   },
   postsContainer: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: isMobile ? 20 : isTablet ? 40 : 30,
+    maxWidth: isTablet ? 900 : "100%",
+    alignSelf: isTablet ? "center" : "stretch",
+    width: "100%",
   },
   postCard: {
     marginBottom: 16,
@@ -629,8 +692,8 @@ const styles = StyleSheet.create({
   },
   fab: {
     position: "absolute",
-    bottom: 20,
-    right: 20,
+    bottom: isMobile ? 20 : isTablet ? 40 : 30,
+    right: isMobile ? 20 : isTablet ? 40 : 30,
   },
 });
 
