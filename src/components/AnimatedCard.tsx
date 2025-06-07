@@ -125,12 +125,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
+    boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.3)",
     elevation: 8,
   },
 });
