@@ -45,34 +45,30 @@ const ProfileScreen = () => {
   const [parallaxAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    // Entrance animations
+    // Entrance animations - simplified for web compatibility
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 1200,
-        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 1000,
-        easing: Easing.out(Easing.back(1.2)),
         useNativeDriver: true,
       }),
       Animated.timing(scaleAnim, {
         toValue: 1,
         duration: 800,
-        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
     ]).start();
 
-    // Continuous animations
+    // Continuous animations - simplified
     const rotateAnimation = Animated.loop(
       Animated.timing(rotateAnim, {
         toValue: 1,
         duration: 20000,
-        easing: Easing.linear,
         useNativeDriver: true,
       }),
     );
@@ -82,13 +78,11 @@ const ProfileScreen = () => {
         Animated.timing(pulseAnim, {
           toValue: 1.1,
           duration: 2000,
-          easing: Easing.inOut(Easing.sine),
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
           toValue: 1,
           duration: 2000,
-          easing: Easing.inOut(Easing.sine),
           useNativeDriver: true,
         }),
       ]),
@@ -235,7 +229,6 @@ const ProfileScreen = () => {
       Animated.timing(scaleAnim, {
         toValue: 1,
         duration: 200,
-        easing: Easing.out(Easing.back(1.5)),
         useNativeDriver: true,
       }),
     ]).start();
@@ -265,7 +258,6 @@ const ProfileScreen = () => {
           Animated.timing(cardScale, {
             toValue: 1,
             duration: 300,
-            easing: Easing.out(Easing.back(1.5)),
             useNativeDriver: true,
           }),
           Animated.timing(cardRotate, {
