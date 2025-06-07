@@ -191,5 +191,61 @@
       "concept": "Kavram Öğren",
       "debug": "Hata Bul"
     }
+  },
+  "forum": {
+    "title": "Topluluk Forum",
+    "subtitle": "Sorularınızı sorun, deneyimlerinizi paylaşın",
+    "searchPlaceholder": "Forum'da ara...",
+    "noResults": "Sonuç bulunamadı",
+    "noResultsDesc": "Arama kriterlerinizi değiştirerek tekrar deneyin",
+    "categories": {
+      "all": "Tümü",
+      "algorithms": "Algoritmalar",
+      "beginners": "Başlayanlar",
+      "projects": "Projeler",
+      "help": "Yardım"
+    }
+  },
+  "courseDetail": {
+    "by": "Eğitmen:",
+    "overview": "Genel Bakış",
+    "lessons": "Dersler",
+    "instructor": "Eğitmen",
+    "aboutCourse": "Kurs Hakkında",
+    "whatYouWillLearn": "Neler Öğreneceksiniz",
+    "requirements": "Gereksinimler",
+    "progress": "İlerleme",
+    "continueLesson": "Dersi Devam Et",
+    "enrollNow": "Kursa Kayıt Ol"
+  },
+  "profile": {
+    "settings": {
+      "title": "Ayarlar",
+      "appearance": "Görünüm",
+      "darkMode": "Koyu Mod",
+      "language": "Dil",
+      "appLanguage": "Uygulama Dili",
+      "notifications": "Bildirimler",
+      "pushNotifications": "Push Bildirimleri"
+    },
+    "achievements": {
+      "cppMaster": "C++ Master",
+      "cppMasterDesc": "Tüm C++ kurslarını tamamladı",
+      "algorithmExpert": "Algoritma Uzmanı",
+      "algorithmExpertDesc": "100+ algoritma problemi çözdü",
+      "codeReviewer": "Kod İnceleyici",
+      "codeReviewerDesc": "50+ kod incelemesi yaptı",
+      "streakMaster": "Seri Ustası",
+      "streakMasterDesc": "15 günlük öğrenme serisi",
+      "mentor": "Mentor",
+      "mentorDesc": "25+ öğrenciye yardım etti",
+      "debugger": "Debug Ustası",
+      "debuggerDesc": "50+ kod hatası düzeltti"
+    },
+    "activity": {
+      "courseCompleted": "Kurs tamamlandı",
+      "exerciseSolved": "Alıştırma çözüldü",
+      "achievementEarned": "Başarı kazanıldı"
+    }
   }
 }

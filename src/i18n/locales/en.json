@@ -191,5 +191,61 @@
       "concept": "Learn Concept",
       "debug": "Find Bug"
     }
+  },
+  "forum": {
+    "title": "Community Forum",
+    "subtitle": "Ask questions, share your experiences",
+    "searchPlaceholder": "Search in forum...",
+    "noResults": "No results found",
+    "noResultsDesc": "Try changing your search criteria",
+    "categories": {
+      "all": "All",
+      "algorithms": "Algorithms",
+      "beginners": "Beginners",
+      "projects": "Projects",
+      "help": "Help"
+    }
+  },
+  "courseDetail": {
+    "by": "Instructor:",
+    "overview": "Overview",
+    "lessons": "Lessons",
+    "instructor": "Instructor",
+    "aboutCourse": "About Course",
+    "whatYouWillLearn": "What You Will Learn",
+    "requirements": "Requirements",
+    "progress": "Progress",
+    "continueLesson": "Continue Lesson",
+    "enrollNow": "Enroll Now"
+  },
+  "profile": {
+    "settings": {
+      "title": "Settings",
+      "appearance": "Appearance",
+      "darkMode": "Dark Mode",
+      "language": "Language",
+      "appLanguage": "App Language",
+      "notifications": "Notifications",
+      "pushNotifications": "Push Notifications"
+    },
+    "achievements": {
+      "cppMaster": "C++ Master",
+      "cppMasterDesc": "Completed all C++ courses",
+      "algorithmExpert": "Algorithm Expert",
+      "algorithmExpertDesc": "Solved 100+ algorithm problems",
+      "codeReviewer": "Code Reviewer",
+      "codeReviewerDesc": "Reviewed 50+ code submissions",
+      "streakMaster": "Streak Master",
+      "streakMasterDesc": "15 day learning streak",
+      "mentor": "Mentor",
+      "mentorDesc": "Helped 25+ students",
+      "debugger": "Debug Master",
+      "debuggerDesc": "Fixed 50+ code bugs"
+    },
+    "activity": {
+      "courseCompleted": "Course completed",
+      "exerciseSolved": "Exercise solved",
+      "achievementEarned": "Achievement earned"
+    }
   }
 }
