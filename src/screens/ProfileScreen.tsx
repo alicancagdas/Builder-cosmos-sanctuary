@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,400 +6,485 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Image,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Card, Chip, Button, Avatar, ProgressBar } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withDelay,
+  interpolate,
+} from "react-native-reanimated";
 
-const { width } = Dimensions.get("window");
+import AnimatedBackground from "../components/AnimatedBackground";
+import AnimatedCard from "../components/AnimatedCard";
+import AnimatedProgress, {
+  CircularProgress,
+} from "../components/AnimatedProgress";
+import FloatingActionButton from "../components/FloatingActionButton";
+
+const { width, height } = Dimensions.get("window");
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const [activeTab, setActiveTab] = useState("achievements");
 
+  // Animation values
+  const profileScale = useSharedValue(0.8);
+  const profileOpacity = useSharedValue(0);
+  const tabsTranslateY = useSharedValue(50);
+
+  useEffect(() => {
+    // Profile entrance animation
+    profileOpacity.value = withTiming(1, { duration: 600 });
+    profileScale.value = withSpring(1, {
+      damping: 15,
+      stiffness: 120,
+    });
+
+    tabsTranslateY.value = withDelay(
+      300,
+      withSpring(0, {
+        damping: 15,
+        stiffness: 100,
+      }),
+    );
+  }, []);
+
+  const profileAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: profileOpacity.value,
+    transform: [{ scale: profileScale.value }],
+  }));
+
+  const tabsAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: tabsTranslateY.value }],
+  }));
+
+  const user = {
+    name: "Ethan Carter",
+    username: "@ethancarter",
+    avatar: "https://api.dicebear.com/7.x/avataaars/png?seed=Ethan",
+    level: "İleri Seviye",
+    levelProgress: 75,
+    totalPoints: 2456,
+    coursesCompleted: 12,
+    exercisesCompleted: 247,
+    streak: 23,
+    followers: 156,
+    following: 89,
+    joinDate: "Ocak 2023",
+  };
+
   const achievements = [
     {
       id: 1,
-      title: "C++ Master",
-      description: "Completed all C++ courses",
+      title: "İlk Kod",
+      description: "İlk Hello World programını yazdın",
       icon: "code-slash",
       color: "#3b82f6",
-      earned: true,
-      date: "2024",
+      unlocked: true,
+      date: "15 Ocak 2023",
     },
     {
       id: 2,
-      title: "Algorithm Expert",
-      description: "Solved 100+ algorithm challenges",
-      icon: "brain",
-      color: "#8b5cf6",
-      earned: true,
-      date: "2024",
+      title: "Hızlı Öğrenci",
+      description: "7 gün üst üste egzersiz çözdün",
+      icon: "flash",
+      color: "#f59e0b",
+      unlocked: true,
+      date: "22 Ocak 2023",
     },
     {
       id: 3,
-      title: "Code Reviewer",
-      description: "Reviewed 50+ code submissions",
-      icon: "checkmark-circle",
+      title: "Kurs Tamamlayıcı",
+      description: "İlk kursunu tamamladın",
+      icon: "trophy",
       color: "#10b981",
-      earned: true,
-      date: "2024",
+      unlocked: true,
+      date: "5 Şubat 2023",
     },
     {
       id: 4,
-      title: "Community Helper",
-      description: "Helped 25+ community members",
-      icon: "people",
-      color: "#f59e0b",
-      earned: false,
-      progress: 18,
+      title: "Problem Çözücü",
+      description: "100 egzersiz tamamladın",
+      icon: "bulb",
+      color: "#8b5cf6",
+      unlocked: true,
+      date: "20 Mart 2023",
     },
     {
       id: 5,
-      title: "Speed Coder",
-      description: "Complete 10 challenges under 30 min",
-      icon: "flash",
-      color: "#ef4444",
-      earned: false,
-      progress: 7,
+      title: "Topluluk Üyesi",
+      description: "Forum'da 50 mesaj attın",
+      icon: "people",
+      color: "#06b6d4",
+      unlocked: true,
+      date: "10 Nisan 2023",
     },
-  ];
-
-  const stats = [
-    { label: "Tamamlanan Kurs", value: "12", icon: "book" },
-    { label: "Çözülen Problem", value: "247", icon: "code-slash" },
-    { label: "Çalışma Serisi", value: "15 gün", icon: "calendar" },
-    { label: "Topluluk Sırası", value: "#342", icon: "trophy" },
+    {
+      id: 6,
+      title: "Uzman",
+      description: "İleri seviye kursu tamamla",
+      icon: "school",
+      color: "#ef4444",
+      unlocked: false,
+      date: null,
+    },
   ];
 
   const recentActivity = [
     {
       id: 1,
       type: "course",
-      title: "C++ Constructors dersini tamamladı",
+      title: "C++ Nesne Yönelimli Programlama",
+      action: "Bölüm 5 tamamlandı",
       time: "2 saat önce",
-      points: 25,
+      icon: "book",
+      color: "#3b82f6",
     },
     {
       id: 2,
       type: "exercise",
-      title: "Binary Search alıştırmasını çözdü",
+      title: "Pointer Manipülasyonu",
+      action: "Egzersiz çözüldü",
       time: "5 saat önce",
-      points: 40,
+      icon: "code-slash",
+      color: "#10b981",
     },
     {
       id: 3,
-      type: "quiz",
-      title: "OOP Quiz'ini %90 ile geçti",
+      type: "achievement",
+      title: "Problem Çözücü",
+      action: "Rozet kazanıldı",
       time: "1 gün önce",
-      points: 50,
+      icon: "trophy",
+      color: "#f59e0b",
     },
     {
       id: 4,
-      type: "achievement",
-      title: "C++ Uzmanı rozetini kazandı",
+      type: "forum",
+      title: "Array vs Pointer Farkları",
+      action: "Soruya yanıt verildi",
       time: "2 gün önce",
-      points: 100,
+      icon: "chatbubble",
+      color: "#8b5cf6",
     },
   ];
 
-  const currentGoals = [
+  const stats = [
+    { label: "Puan", value: user.totalPoints, icon: "star", color: "#f59e0b" },
     {
-      title: "Advanced C++ Course tamamla",
-      progress: 65,
-      target: "Bu ay sonu",
+      label: "Tamamlanan Kurs",
+      value: user.coursesCompleted,
+      icon: "book",
+      color: "#3b82f6",
     },
     {
-      title: "50 Algorithm Problem çöz",
-      progress: 32,
-      target: "Bu hafta",
+      label: "Egzersiz",
+      value: user.exercisesCompleted,
+      icon: "code-slash",
+      color: "#10b981",
     },
     {
-      title: "10 Topluluk üyesine yardım et",
-      progress: 80,
-      target: "Devam ediyor",
+      label: "Seri",
+      value: `${user.streak} gün`,
+      icon: "flash",
+      color: "#ef4444",
     },
   ];
 
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case "course":
-        return "book";
-      case "exercise":
-        return "code-slash";
-      case "quiz":
-        return "help-circle";
-      case "achievement":
-        return "trophy";
-      default:
-        return "flash";
-    }
-  };
+  const renderStatCard = (stat, index) => (
+    <AnimatedCard
+      key={stat.label}
+      delay={index * 100}
+      gradientColors={[`${stat.color}20`, `${stat.color}10`]}
+      shadowColor={stat.color}
+      style={styles.statCard}
+    >
+      <View style={styles.statContent}>
+        <LinearGradient
+          colors={[stat.color, `${stat.color}80`]}
+          style={styles.statIcon}
+        >
+          <Ionicons name={stat.icon} size={20} color="white" />
+        </LinearGradient>
+        <Text style={styles.statValue}>{stat.value}</Text>
+        <Text style={styles.statLabel}>{stat.label}</Text>
+      </View>
+    </AnimatedCard>
+  );
+
+  const renderAchievement = (achievement, index) => (
+    <AnimatedCard
+      key={achievement.id}
+      delay={index * 100}
+      gradientColors={
+        achievement.unlocked
+          ? [`${achievement.color}20`, `${achievement.color}10`]
+          : ["rgba(75, 85, 99, 0.2)", "rgba(75, 85, 99, 0.1)"]
+      }
+      shadowColor={achievement.unlocked ? achievement.color : "#4b5563"}
+      style={[
+        styles.achievementCard,
+        !achievement.unlocked && styles.lockedAchievement,
+      ]}
+    >
+      <View style={styles.achievementContent}>
+        <LinearGradient
+          colors={
+            achievement.unlocked
+              ? [achievement.color, `${achievement.color}80`]
+              : ["#4b5563", "#374151"]
+          }
+          style={styles.achievementIcon}
+        >
+          <Ionicons
+            name={achievement.unlocked ? achievement.icon : "lock-closed"}
+            size={24}
+            color="white"
+          />
+        </LinearGradient>
+
+        <View style={styles.achievementText}>
+          <Text
+            style={[
+              styles.achievementTitle,
+              !achievement.unlocked && styles.lockedText,
+            ]}
+          >
+            {achievement.title}
+          </Text>
+          <Text
+            style={[
+              styles.achievementDescription,
+              !achievement.unlocked && styles.lockedText,
+            ]}
+          >
+            {achievement.description}
+          </Text>
+          {achievement.date && (
+            <Text style={styles.achievementDate}>{achievement.date}</Text>
+          )}
+        </View>
+      </View>
+    </AnimatedCard>
+  );
+
+  const renderActivity = (activity, index) => (
+    <AnimatedCard
+      key={activity.id}
+      delay={index * 150}
+      gradientColors={[`${activity.color}15`, `${activity.color}08`]}
+      shadowColor={activity.color}
+      style={styles.activityCard}
+    >
+      <View style={styles.activityContent}>
+        <LinearGradient
+          colors={[activity.color, `${activity.color}80`]}
+          style={styles.activityIcon}
+        >
+          <Ionicons name={activity.icon} size={20} color="white" />
+        </LinearGradient>
+
+        <View style={styles.activityText}>
+          <Text style={styles.activityTitle}>{activity.title}</Text>
+          <Text style={styles.activityAction}>{activity.action}</Text>
+          <Text style={styles.activityTime}>{activity.time}</Text>
+        </View>
+      </View>
+    </AnimatedCard>
+  );
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "achievements":
         return (
           <View style={styles.tabContent}>
-            {/* Achievement Grid */}
+            <Text style={styles.tabTitle}>Rozetler</Text>
             <View style={styles.achievementsGrid}>
-              {achievements.map((achievement) => (
-                <Card
-                  key={achievement.id}
-                  style={[
-                    styles.achievementCard,
-                    achievement.earned && styles.earnedAchievementCard,
-                  ]}
-                >
-                  <Card.Content style={styles.achievementContent}>
-                    <LinearGradient
-                      colors={
-                        achievement.earned
-                          ? [achievement.color, `${achievement.color}80`]
-                          : ["#64748b", "#64748b80"]
-                      }
-                      style={styles.achievementIcon}
-                    >
-                      <Ionicons
-                        name={achievement.icon as any}
-                        size={24}
-                        color="white"
-                      />
-                    </LinearGradient>
-
-                    <Text style={styles.achievementTitle}>
-                      {achievement.title}
-                    </Text>
-                    <Text style={styles.achievementDescription}>
-                      {achievement.description}
-                    </Text>
-
-                    {achievement.earned ? (
-                      <Chip
-                        mode="outlined"
-                        style={styles.earnedChip}
-                        textStyle={styles.earnedChipText}
-                      >
-                        <Ionicons
-                          name="checkmark-circle"
-                          size={12}
-                          color="#10b981"
-                        />{" "}
-                        {achievement.date}
-                      </Chip>
-                    ) : (
-                      <View style={styles.progressContainer}>
-                        <Text style={styles.progressText}>
-                          {achievement.progress}/
-                          {achievement.title.includes("Community")
-                            ? "25"
-                            : achievement.title.includes("Speed")
-                              ? "10"
-                              : "5"}
-                        </Text>
-                        <ProgressBar
-                          progress={
-                            achievement.progress! /
-                            (achievement.title.includes("Community")
-                              ? 25
-                              : achievement.title.includes("Speed")
-                                ? 10
-                                : 5)
-                          }
-                          color={achievement.color}
-                          style={styles.progressBar}
-                        />
-                      </View>
-                    )}
-                  </Card.Content>
-                </Card>
-              ))}
-            </View>
-
-            {/* Current Goals */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Mevcut Hedefler</Text>
-              {currentGoals.map((goal, index) => (
-                <Card key={index} style={styles.goalCard}>
-                  <Card.Content style={styles.goalContent}>
-                    <View style={styles.goalHeader}>
-                      <Text style={styles.goalTitle}>{goal.title}</Text>
-                      <Text style={styles.goalTarget}>{goal.target}</Text>
-                    </View>
-                    <ProgressBar
-                      progress={goal.progress / 100}
-                      color="#3b82f6"
-                      style={styles.goalProgressBar}
-                    />
-                    <Text style={styles.goalProgressText}>
-                      {goal.progress}% tamamlandı
-                    </Text>
-                  </Card.Content>
-                </Card>
-              ))}
+              {achievements.map((achievement, index) =>
+                renderAchievement(achievement, index),
+              )}
             </View>
           </View>
         );
-
       case "activity":
         return (
           <View style={styles.tabContent}>
-            <Text style={styles.sectionTitle}>Son Aktiviteler</Text>
-            {recentActivity.map((activity) => (
-              <Card key={activity.id} style={styles.activityCard}>
-                <Card.Content style={styles.activityContent}>
-                  <View style={styles.activityIcon}>
-                    <Ionicons
-                      name={getActivityIcon(activity.type) as any}
-                      size={20}
-                      color="#3b82f6"
-                    />
-                  </View>
-                  <View style={styles.activityInfo}>
-                    <Text style={styles.activityTitle}>{activity.title}</Text>
-                    <Text style={styles.activityTime}>{activity.time}</Text>
-                  </View>
-                  <Chip
-                    mode="outlined"
-                    style={styles.pointsChip}
-                    textStyle={styles.pointsText}
-                  >
-                    +{activity.points}
-                  </Chip>
-                </Card.Content>
-              </Card>
-            ))}
+            <Text style={styles.tabTitle}>Son Aktiviteler</Text>
+            <View style={styles.activityList}>
+              {recentActivity.map((activity, index) =>
+                renderActivity(activity, index),
+              )}
+            </View>
           </View>
         );
-
-      default:
+      case "about":
         return (
           <View style={styles.tabContent}>
-            <Text style={styles.sectionTitle}>Hakkında</Text>
-            <Card style={styles.aboutCard}>
-              <Card.Content style={styles.aboutContent}>
-                <Text style={styles.aboutText}>
-                  Software engineer with 3+ years of experience in C++
-                  development. Passionate about system programming, algorithms,
-                  and helping others learn to code. Currently focusing on
-                  advanced C++ features and contributing to open source
-                  projects.
-                </Text>
-              </Card.Content>
-            </Card>
+            <Text style={styles.tabTitle}>Hakkında</Text>
+            <AnimatedCard
+              delay={200}
+              gradientColors={[
+                "rgba(59, 130, 246, 0.1)",
+                "rgba(29, 78, 216, 0.05)",
+              ]}
+              shadowColor="#3b82f6"
+              style={styles.aboutCard}
+            >
+              <View style={styles.aboutContent}>
+                <View style={styles.aboutItem}>
+                  <Ionicons name="calendar" size={20} color="#3b82f6" />
+                  <Text style={styles.aboutLabel}>Katılım Tarihi</Text>
+                  <Text style={styles.aboutValue}>{user.joinDate}</Text>
+                </View>
+
+                <View style={styles.aboutItem}>
+                  <Ionicons name="people" size={20} color="#3b82f6" />
+                  <Text style={styles.aboutLabel}>Takipçi</Text>
+                  <Text style={styles.aboutValue}>{user.followers}</Text>
+                </View>
+
+                <View style={styles.aboutItem}>
+                  <Ionicons name="person-add" size={20} color="#3b82f6" />
+                  <Text style={styles.aboutLabel}>Takip Edilen</Text>
+                  <Text style={styles.aboutValue}>{user.following}</Text>
+                </View>
+
+                <View style={styles.aboutItem}>
+                  <Ionicons name="trending-up" size={20} color="#3b82f6" />
+                  <Text style={styles.aboutLabel}>Seviye</Text>
+                  <Text style={styles.aboutValue}>{user.level}</Text>
+                </View>
+              </View>
+            </AnimatedCard>
           </View>
         );
+      default:
+        return null;
     }
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Profile Header */}
-      <LinearGradient
-        colors={["#030712", "#0f172a", "#1e293b"]}
-        style={styles.headerGradient}
+    <View style={styles.container}>
+      <AnimatedBackground variant="profile" />
+
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.profileHeader}>
-          <Avatar.Image
-            size={100}
-            source={{
-              uri: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
-            }}
-            style={styles.profileAvatar}
-          />
+        {/* Profile Header */}
+        <Animated.View style={[styles.profileHeader, profileAnimatedStyle]}>
+          <LinearGradient
+            colors={["rgba(6, 182, 212, 0.2)", "transparent"]}
+            style={styles.profileGradient}
+          >
+            <View style={styles.profileInfo}>
+              <View style={styles.avatarContainer}>
+                <LinearGradient
+                  colors={["#06b6d4", "#0891b2"]}
+                  style={styles.avatarGradient}
+                >
+                  <Image source={{ uri: user.avatar }} style={styles.avatar} />
+                </LinearGradient>
+                <View style={styles.levelBadge}>
+                  <CircularProgress
+                    progress={user.levelProgress}
+                    size={50}
+                    strokeWidth={3}
+                  />
+                </View>
+              </View>
 
-          <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>Ethan Carter</Text>
-            <Text style={styles.profileRole}>Software Engineer</Text>
-            <View style={styles.profileBadges}>
-              <Chip
-                mode="outlined"
-                style={styles.levelChip}
-                textStyle={styles.levelChipText}
-              >
-                <Ionicons name="trophy" size={12} color="#3b82f6" />
-                {" Intermediate Level"}
-              </Chip>
-              <Chip
-                mode="outlined"
-                style={styles.expertChip}
-                textStyle={styles.expertText}
-              >
-                C++ Expert
-              </Chip>
+              <Text style={styles.userName}>{user.name}</Text>
+              <Text style={styles.userHandle}>{user.username}</Text>
+              <Text style={styles.userLevel}>{user.level}</Text>
+
+              <View style={styles.actionButtons}>
+                <TouchableOpacity style={styles.followButton}>
+                  <LinearGradient
+                    colors={["#3b82f6", "#1d4ed8"]}
+                    style={styles.buttonGradient}
+                  >
+                    <Ionicons name="person-add" size={16} color="white" />
+                    <Text style={styles.buttonText}>Takip Et</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.messageButton}>
+                  <View style={styles.messageButtonBorder}>
+                    <Ionicons name="chatbubble" size={16} color="#3b82f6" />
+                    <Text style={styles.messageButtonText}>Mesaj</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-            <Text style={styles.profileDescription}>
-              Joined 2021 • Passionate about algorithms and system programming
-            </Text>
-          </View>
+          </LinearGradient>
+        </Animated.View>
 
-          <View style={styles.profileActions}>
-            <Button
-              mode="contained"
-              style={styles.followButton}
-              labelStyle={styles.followButtonText}
-            >
-              Follow
-            </Button>
-            <Button
-              mode="outlined"
-              style={styles.messageButton}
-              labelStyle={styles.messageButtonText}
-              onPress={() => navigation.navigate("AI Chat")}
-            >
-              Message
-            </Button>
+        {/* Stats Section */}
+        <View style={styles.statsSection}>
+          <View style={styles.statsGrid}>
+            {stats.map((stat, index) => renderStatCard(stat, index))}
           </View>
         </View>
-      </LinearGradient>
 
-      {/* Stats Cards */}
-      <View style={styles.statsContainer}>
-        {stats.map((stat, index) => (
-          <Card key={index} style={styles.statCard}>
-            <Card.Content style={styles.statContent}>
-              <Ionicons name={stat.icon as any} size={24} color="#64748b" />
-              <Text style={styles.statValue}>{stat.value}</Text>
-              <Text style={styles.statLabel}>{stat.label}</Text>
-            </Card.Content>
-          </Card>
-        ))}
-      </View>
-
-      {/* Tabs */}
-      <View style={styles.tabsContainer}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.tabsScrollView}
-        >
-          {[
-            { key: "achievements", label: "Achievements" },
-            { key: "activity", label: "Activity" },
-            { key: "about", label: "About" },
-          ].map((tab) => (
-            <TouchableOpacity
-              key={tab.key}
-              style={[styles.tab, activeTab === tab.key && styles.activeTab]}
-              onPress={() => setActiveTab(tab.key)}
-            >
-              <Text
+        {/* Tabs */}
+        <Animated.View style={[styles.tabsContainer, tabsAnimatedStyle]}>
+          <View style={styles.tabButtons}>
+            {[
+              { key: "achievements", label: "Rozetler", icon: "trophy" },
+              { key: "activity", label: "Aktivite", icon: "time" },
+              { key: "about", label: "Hakkında", icon: "information-circle" },
+            ].map((tab) => (
+              <TouchableOpacity
+                key={tab.key}
                 style={[
-                  styles.tabText,
-                  activeTab === tab.key && styles.activeTabText,
+                  styles.tabButton,
+                  activeTab === tab.key && styles.activeTab,
                 ]}
+                onPress={() => setActiveTab(tab.key)}
               >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+                {activeTab === tab.key && (
+                  <LinearGradient
+                    colors={["#3b82f6", "#1d4ed8"]}
+                    style={styles.activeTabGradient}
+                  />
+                )}
+                <Ionicons
+                  name={tab.icon}
+                  size={16}
+                  color={activeTab === tab.key ? "white" : "#9ca3af"}
+                />
+                <Text
+                  style={[
+                    styles.tabButtonText,
+                    activeTab === tab.key && styles.activeTabText,
+                  ]}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </Animated.View>
 
-      {/* Tab Content */}
-      {renderTabContent()}
-    </ScrollView>
+        {/* Tab Content */}
+        {renderTabContent()}
+      </ScrollView>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton
+        icon="settings"
+        onPress={() => navigation.navigate("Settings")}
+        colors={["#06b6d4", "#0891b2"]}
+      />
+    </View>
   );
 };
 
@@ -408,161 +493,193 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#030712",
   },
-  headerGradient: {
-    paddingTop: 40,
-    paddingBottom: 20,
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 100,
   },
   profileHeader: {
-    paddingHorizontal: 20,
-    alignItems: "center",
+    paddingTop: 60,
+    paddingBottom: 20,
   },
-  profileAvatar: {
-    marginBottom: 16,
-    borderWidth: 4,
-    borderColor: "#3b82f6",
+  profileGradient: {
+    alignItems: "center",
   },
   profileInfo: {
     alignItems: "center",
-    marginBottom: 20,
   },
-  profileName: {
+  avatarContainer: {
+    position: "relative",
+    marginBottom: 16,
+  },
+  avatarGradient: {
+    padding: 4,
+    borderRadius: 50,
+  },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  levelBadge: {
+    position: "absolute",
+    bottom: -5,
+    right: -5,
+  },
+  userName: {
     fontSize: 24,
-    fontWeight: "700",
-    color: "#f9fafb",
+    fontWeight: "800",
+    color: "#ffffff",
     marginBottom: 4,
   },
-  profileRole: {
+  userHandle: {
     fontSize: 16,
-    color: "#94a3b8",
-    marginBottom: 12,
+    color: "#9ca3af",
+    marginBottom: 8,
   },
-  profileBadges: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 12,
-  },
-  levelChip: {
-    borderColor: "#3b82f6",
-  },
-  levelChipText: {
-    color: "#3b82f6",
-    fontSize: 12,
-  },
-  expertChip: {
-    borderColor: "#8b5cf6",
-  },
-  expertText: {
-    color: "#8b5cf6",
-    fontSize: 12,
-  },
-  profileDescription: {
+  userLevel: {
     fontSize: 14,
-    color: "#64748b",
-    textAlign: "center",
-    maxWidth: 280,
+    color: "#06b6d4",
+    fontWeight: "600",
+    marginBottom: 24,
   },
-  profileActions: {
+  actionButtons: {
     flexDirection: "row",
     gap: 12,
   },
   followButton: {
-    borderRadius: 8,
+    borderRadius: 24,
+    overflow: "hidden",
   },
-  followButtonText: {
+  buttonGradient: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    gap: 8,
+  },
+  buttonText: {
     fontSize: 14,
     fontWeight: "600",
+    color: "white",
   },
   messageButton: {
-    borderRadius: 8,
+    borderRadius: 24,
+  },
+  messageButtonBorder: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    gap: 8,
+    borderWidth: 1,
     borderColor: "#3b82f6",
+    borderRadius: 24,
   },
   messageButtonText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#3b82f6",
   },
-  statsContainer: {
-    flexDirection: "row",
+  statsSection: {
     paddingHorizontal: 20,
-    paddingVertical: 20,
+    marginTop: 20,
+  },
+  statsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
-    marginTop: -10,
   },
   statCard: {
     flex: 1,
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
+    minWidth: (width - 56) / 2,
+    padding: 16,
   },
   statContent: {
     alignItems: "center",
-    padding: 12,
+  },
+  statIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 8,
   },
   statValue: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#f9fafb",
-    marginVertical: 4,
+    color: "#ffffff",
+    marginBottom: 4,
   },
   statLabel: {
-    fontSize: 11,
-    color: "#64748b",
+    fontSize: 12,
+    color: "#9ca3af",
     textAlign: "center",
   },
   tabsContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#334155",
-  },
-  tabsScrollView: {
     paddingHorizontal: 20,
+    marginTop: 30,
   },
-  tab: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginRight: 8,
+  tabButtons: {
+    flexDirection: "row",
+    backgroundColor: "rgba(17, 24, 39, 0.8)",
+    borderRadius: 12,
+    padding: 4,
+  },
+  tabButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    position: "relative",
+    gap: 6,
   },
   activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: "#3b82f6",
+    overflow: "hidden",
   },
-  tabText: {
-    fontSize: 16,
-    color: "#64748b",
-    fontWeight: "500",
+  activeTabGradient: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  tabButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#9ca3af",
   },
   activeTabText: {
-    color: "#3b82f6",
-    fontWeight: "600",
+    color: "white",
   },
   tabContent: {
-    padding: 20,
+    paddingHorizontal: 20,
+    marginTop: 24,
   },
-  section: {
-    marginTop: 32,
-  },
-  sectionTitle: {
+  tabTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#f9fafb",
-    marginBottom: 16,
+    color: "#ffffff",
+    marginBottom: 20,
   },
   achievementsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
+    gap: 12,
   },
   achievementCard: {
-    width: (width - 52) / 2,
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
+    padding: 16,
   },
-  earnedAchievementCard: {
-    borderColor: "#10b981",
+  lockedAchievement: {
+    opacity: 0.5,
   },
   achievementContent: {
+    flexDirection: "row",
     alignItems: "center",
-    padding: 16,
+    gap: 16,
   },
   achievementIcon: {
     width: 48,
@@ -570,128 +687,84 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 12,
+  },
+  achievementText: {
+    flex: 1,
   },
   achievementTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#f9fafb",
-    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#ffffff",
     marginBottom: 4,
   },
   achievementDescription: {
-    fontSize: 12,
-    color: "#64748b",
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  earnedChip: {
-    borderColor: "#10b981",
-  },
-  earnedChipText: {
-    color: "#10b981",
-    fontSize: 11,
-  },
-  progressContainer: {
-    width: "100%",
-    alignItems: "center",
-  },
-  progressText: {
-    fontSize: 12,
-    color: "#f9fafb",
+    fontSize: 14,
+    color: "#9ca3af",
     marginBottom: 4,
   },
-  progressBar: {
-    width: "100%",
-    height: 4,
-    borderRadius: 2,
+  achievementDate: {
+    fontSize: 12,
+    color: "#6b7280",
   },
-  goalCard: {
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
-    marginBottom: 12,
+  lockedText: {
+    color: "#6b7280",
   },
-  goalContent: {
-    padding: 16,
-  },
-  goalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  goalTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#f9fafb",
-    flex: 1,
-  },
-  goalTarget: {
-    fontSize: 14,
-    color: "#64748b",
-  },
-  goalProgressBar: {
-    height: 6,
-    borderRadius: 3,
-    marginBottom: 8,
-  },
-  goalProgressText: {
-    fontSize: 14,
-    color: "#94a3b8",
+  activityList: {
+    gap: 12,
   },
   activityCard: {
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
-    marginBottom: 12,
+    padding: 16,
   },
   activityContent: {
     flexDirection: "row",
-    alignItems: "center",
-    padding: 16,
+    alignItems: "flex-start",
+    gap: 12,
   },
   activityIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#1e293b",
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 12,
   },
-  activityInfo: {
+  activityText: {
     flex: 1,
   },
   activityTitle: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#f9fafb",
+    color: "#ffffff",
+    marginBottom: 4,
+  },
+  activityAction: {
+    fontSize: 12,
+    color: "#9ca3af",
     marginBottom: 4,
   },
   activityTime: {
-    fontSize: 12,
-    color: "#64748b",
-  },
-  pointsChip: {
-    borderColor: "#10b981",
-  },
-  pointsText: {
-    color: "#10b981",
-    fontSize: 12,
+    fontSize: 11,
+    color: "#6b7280",
   },
   aboutCard: {
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  aboutContent: {
     padding: 20,
   },
-  aboutText: {
-    fontSize: 16,
-    color: "#94a3b8",
-    lineHeight: 24,
+  aboutContent: {
+    gap: 16,
+  },
+  aboutItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  aboutLabel: {
+    flex: 1,
+    fontSize: 14,
+    color: "#9ca3af",
+  },
+  aboutValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#ffffff",
   },
 });
 
