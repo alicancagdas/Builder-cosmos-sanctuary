@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -9,34 +9,85 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
-import { Card, Button, Avatar, Chip } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+  withDelay,
+} from "react-native-reanimated";
 
-const { width } = Dimensions.get("window");
+import AnimatedBackground from "../components/AnimatedBackground";
+import AnimatedCard from "../components/AnimatedCard";
+import FloatingActionButton from "../components/FloatingActionButton";
+import AnimatedProgress from "../components/AnimatedProgress";
+
+const { width, height } = Dimensions.get("window");
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+
+  // Animation values
+  const headerOpacity = useSharedValue(0);
+  const headerTranslateY = useSharedValue(-50);
+  const statsScale = useSharedValue(0.8);
+
+  useEffect(() => {
+    // Entrance animations
+    headerOpacity.value = withTiming(1, { duration: 800 });
+    headerTranslateY.value = withSpring(0, {
+      damping: 15,
+      stiffness: 100,
+    });
+
+    statsScale.value = withDelay(
+      300,
+      withSpring(1, {
+        damping: 12,
+        stiffness: 120,
+      }),
+    );
+  }, []);
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+    transform: [{ translateY: headerTranslateY.value }],
+  }));
+
+  const statsAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: statsScale.value }],
+  }));
 
   const features = [
     {
       icon: "brain-outline",
       title: "AI Destekli Öğrenme",
       description: "Yapay zeka ile kişiselleştirilmiş öğrenme deneyimi",
+      color: "#3b82f6",
+      gradient: ["#3b82f6", "#1d4ed8"],
     },
     {
       icon: "code-slash-outline",
       title: "İnteraktif Kod Editörü",
       description: "Gerçek zamanlı compiler ile kodlarınızı test edin",
+      color: "#8b5cf6",
+      gradient: ["#8b5cf6", "#7c3aed"],
     },
     {
       icon: "people-outline",
       title: "Aktif Topluluk",
       description: "Binlerce öğrenci ile birlikte öğrenin",
+      color: "#06b6d4",
+      gradient: ["#06b6d4", "#0891b2"],
     },
     {
       icon: "trophy-outline",
       title: "Gamifikasyon",
       description: "Rozetler kazanın, seviye atlayın",
+      color: "#10b981",
+      gradient: ["#10b981", "#059669"],
     },
   ];
 
@@ -47,224 +98,242 @@ const HomeScreen = () => {
       description: "Sıfırdan başlayarak C programlama dilini öğrenin",
       students: 1247,
       rating: 4.8,
-      duration: "6 hafta",
+      progress: 65,
       level: "Başlangıç",
-      color: "#10b981",
+      duration: "8 hafta",
+      gradient: ["#3b82f6", "#1d4ed8"],
     },
     {
       id: 2,
-      title: "C++ ile Nesne Yönelimli Programlama",
-      description: "OOP kavramlarını C++ ile pratiğe dökün",
+      title: "C++ Nesne Yönelimli Programlama",
+      description: "Modern C++ ile ileri seviye programlama teknikleri",
       students: 892,
       rating: 4.9,
-      duration: "8 hafta",
+      progress: 45,
       level: "Orta",
-      color: "#3b82f6",
+      duration: "12 hafta",
+      gradient: ["#8b5cf6", "#7c3aed"],
     },
     {
       id: 3,
       title: "Veri Yapıları ve Algoritmalar",
-      description: "C++ ile veri yapıları ve algoritma analizi",
+      description: "Temel veri yapıları ve algoritma analizi",
       students: 634,
       rating: 4.7,
-      duration: "10 hafta",
+      progress: 30,
       level: "İleri",
-      color: "#ef4444",
+      duration: "10 hafta",
+      gradient: ["#06b6d4", "#0891b2"],
     },
   ];
 
   const stats = [
-    { label: "Toplam Öğrenci", value: "12,847", icon: "people" },
-    { label: "Kurslar", value: "25+", icon: "book" },
-    { label: "Alıştırmalar", value: "500+", icon: "code-slash" },
-    { label: "Başarı Oranı", value: "%95", icon: "trophy" },
+    {
+      label: "Aktif Öğrenci",
+      value: "12,847",
+      icon: "people",
+      color: "#3b82f6",
+    },
+    { label: "Kurs Sayısı", value: "25+", icon: "book", color: "#8b5cf6" },
+    { label: "Alıştırma", value: "500+", icon: "code-slash", color: "#06b6d4" },
+    { label: "Başarı Oranı", value: "%95", icon: "trophy", color: "#10b981" },
   ];
 
-  return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header Section */}
-      <LinearGradient
-        colors={["#030712", "#0f172a", "#1e293b"]}
-        style={styles.headerGradient}
-      >
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <LinearGradient
-              colors={["#3b82f6", "#8b5cf6"]}
-              style={styles.logoGradient}
-            >
-              <Ionicons name="code-slash" size={32} color="white" />
-            </LinearGradient>
-            <Text style={styles.logoText}>CodeMentor AI</Text>
+  const renderStatCard = (stat, index) => (
+    <AnimatedCard
+      key={stat.label}
+      delay={index * 100}
+      gradientColors={[`${stat.color}20`, `${stat.color}10`]}
+      shadowColor={stat.color}
+      style={styles.statCard}
+    >
+      <View style={styles.statContent}>
+        <LinearGradient
+          colors={[stat.color, `${stat.color}80`]}
+          style={styles.statIconContainer}
+        >
+          <Ionicons name={stat.icon} size={24} color="white" />
+        </LinearGradient>
+        <Text style={styles.statValue}>{stat.value}</Text>
+        <Text style={styles.statLabel}>{stat.label}</Text>
+      </View>
+    </AnimatedCard>
+  );
+
+  const renderFeatureCard = (feature, index) => (
+    <AnimatedCard
+      key={feature.title}
+      delay={index * 150}
+      gradientColors={[`${feature.color}20`, `${feature.color}10`]}
+      shadowColor={feature.color}
+      style={styles.featureCard}
+    >
+      <View style={styles.featureContent}>
+        <LinearGradient colors={feature.gradient} style={styles.featureIcon}>
+          <Ionicons name={feature.icon} size={32} color="white" />
+        </LinearGradient>
+        <Text style={styles.featureTitle}>{feature.title}</Text>
+        <Text style={styles.featureDescription}>{feature.description}</Text>
+      </View>
+    </AnimatedCard>
+  );
+
+  const renderCourseCard = (course, index) => (
+    <AnimatedCard
+      key={course.id}
+      delay={index * 200}
+      gradientColors={[`${course.gradient[0]}20`, `${course.gradient[1]}10`]}
+      shadowColor={course.gradient[0]}
+      style={styles.courseCard}
+      onPress={() => navigation.navigate("CourseDetail", { course })}
+    >
+      <LinearGradient colors={course.gradient} style={styles.courseHeader}>
+        <View style={styles.courseLevel}>
+          <Text style={styles.courseLevelText}>{course.level}</Text>
+        </View>
+        <Text style={styles.courseRating}>
+          <Ionicons name="star" size={16} color="#fbbf24" /> {course.rating}
+        </Text>
+      </LinearGradient>
+
+      <View style={styles.courseContent}>
+        <Text style={styles.courseTitle}>{course.title}</Text>
+        <Text style={styles.courseDescription}>{course.description}</Text>
+
+        <View style={styles.courseInfo}>
+          <View style={styles.courseDetail}>
+            <Ionicons name="time-outline" size={16} color="#9ca3af" />
+            <Text style={styles.courseDetailText}>{course.duration}</Text>
           </View>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Ionicons name="notifications-outline" size={24} color="#f9fafb" />
-          </TouchableOpacity>
+          <View style={styles.courseDetail}>
+            <Ionicons name="people-outline" size={16} color="#9ca3af" />
+            <Text style={styles.courseDetailText}>{course.students}</Text>
+          </View>
         </View>
 
+        <AnimatedProgress
+          progress={course.progress}
+          label="İlerleme"
+          height={6}
+          colors={course.gradient}
+        />
+      </View>
+    </AnimatedCard>
+  );
+
+  return (
+    <View style={styles.container}>
+      <AnimatedBackground variant="home" />
+
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Hero Section */}
-        <View style={styles.heroSection}>
-          <Text style={styles.heroTitle}>
-            C ve C++ Öğrenmenin{"\n"}
-            <Text style={styles.heroTitleGradient}>En Akıllı Yolu</Text>
-          </Text>
-          <Text style={styles.heroDescription}>
-            Yapay zeka destekli kişisel mentor'unuz ile programlama dillerini
-            öğrenin
-          </Text>
+        <Animated.View style={[styles.heroSection, headerAnimatedStyle]}>
+          <LinearGradient
+            colors={["rgba(59, 130, 246, 0.1)", "transparent"]}
+            style={styles.heroGradient}
+          >
+            <View style={styles.heroContent}>
+              <Text style={styles.heroTitle}>
+                CodeMentor AI ile{"\n"}
+                <Text style={styles.heroTitleHighlight}>
+                  Programlamayı Öğren
+                </Text>
+              </Text>
+              <Text style={styles.heroSubtitle}>
+                Yapay zeka destekli öğrenme platformu ile C/C++ programlama
+                dillerinde uzmanlaş
+              </Text>
 
-          <View style={styles.heroButtons}>
-            <TouchableOpacity
-              style={styles.primaryButton}
-              onPress={() => navigation.navigate("Kurslar")}
-            >
-              <LinearGradient
-                colors={["#3b82f6", "#8b5cf6"]}
-                style={styles.buttonGradient}
+              <TouchableOpacity
+                style={styles.heroButton}
+                onPress={() => navigation.navigate("Courses")}
               >
-                <Ionicons name="play" size={20} color="white" />
-                <Text style={styles.primaryButtonText}>Öğrenmeye Başla</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+                <LinearGradient
+                  colors={["#3b82f6", "#1d4ed8"]}
+                  style={styles.heroButtonGradient}
+                >
+                  <Text style={styles.heroButtonText}>Öğrenmeye Başla</Text>
+                  <Ionicons name="arrow-forward" size={20} color="white" />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </LinearGradient>
+        </Animated.View>
 
+        {/* Stats Section */}
+        <Animated.View style={[styles.statsSection, statsAnimatedStyle]}>
+          <Text style={styles.sectionTitle}>Platform İstatistikleri</Text>
+          <View style={styles.statsGrid}>
+            {stats.map((stat, index) => renderStatCard(stat, index))}
+          </View>
+        </Animated.View>
+
+        {/* Features Section */}
+        <View style={styles.featuresSection}>
+          <Text style={styles.sectionTitle}>Özellikler</Text>
+          <View style={styles.featuresGrid}>
+            {features.map((feature, index) =>
+              renderFeatureCard(feature, index),
+            )}
+          </View>
+        </View>
+
+        {/* Popular Courses Section */}
+        <View style={styles.coursesSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Popüler Kurslar</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Courses")}>
+              <Text style={styles.viewAllText}>Tümünü Gör</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.coursesScrollContent}
+          >
+            {popularCourses.map((course, index) =>
+              renderCourseCard(course, index),
+            )}
+          </ScrollView>
+        </View>
+
+        {/* CTA Section */}
+        <AnimatedCard
+          delay={800}
+          gradientColors={["rgba(59, 130, 246, 0.2)", "rgba(29, 78, 216, 0.1)"]}
+          shadowColor="#3b82f6"
+          style={styles.ctaSection}
+        >
+          <LinearGradient
+            colors={["#3b82f6", "#1d4ed8"]}
+            style={styles.ctaGradient}
+          >
+            <Text style={styles.ctaTitle}>AI Mentor ile Öğren</Text>
+            <Text style={styles.ctaSubtitle}>
+              Kişisel AI asistanın ile 7/24 soru sor, kod yaz ve öğren
+            </Text>
             <TouchableOpacity
-              style={styles.secondaryButton}
+              style={styles.ctaButton}
               onPress={() => navigation.navigate("AI Chat")}
             >
-              <Ionicons name="chatbubble-outline" size={20} color="#3b82f6" />
-              <Text style={styles.secondaryButtonText}>AI ile Tanış</Text>
+              <Text style={styles.ctaButtonText}>AI Chat'i Dene</Text>
+              <Ionicons name="chatbubble-ellipses" size={20} color="#3b82f6" />
             </TouchableOpacity>
-          </View>
-        </View>
-      </LinearGradient>
+          </LinearGradient>
+        </AnimatedCard>
+      </ScrollView>
 
-      {/* Stats Section */}
-      <View style={styles.statsContainer}>
-        {stats.map((stat, index) => (
-          <View key={index} style={styles.statCard}>
-            <View style={styles.statIconContainer}>
-              <Ionicons name={stat.icon as any} size={24} color="#3b82f6" />
-            </View>
-            <Text style={styles.statValue}>{stat.value}</Text>
-            <Text style={styles.statLabel}>{stat.label}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Features Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Neden CodeMentor AI?</Text>
-        <Text style={styles.sectionDescription}>
-          Modern teknoloji ile geleneksel öğrenme yöntemlerini birleştirerek
-          size en iyi deneyimi sunuyoruz
-        </Text>
-
-        <View style={styles.featuresGrid}>
-          {features.map((feature, index) => (
-            <Card key={index} style={styles.featureCard}>
-              <Card.Content style={styles.featureContent}>
-                <View style={styles.featureIconContainer}>
-                  <Ionicons
-                    name={feature.icon as any}
-                    size={32}
-                    color="#3b82f6"
-                  />
-                </View>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>
-                  {feature.description}
-                </Text>
-              </Card.Content>
-            </Card>
-          ))}
-        </View>
-      </View>
-
-      {/* Popular Courses Section */}
-      <View style={styles.section}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Popüler Kurslar</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Kurslar")}>
-            <Text style={styles.seeAllText}>Tümünü Gör</Text>
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.coursesScrollView}
-        >
-          {popularCourses.map((course) => (
-            <TouchableOpacity
-              key={course.id}
-              onPress={() =>
-                navigation.navigate("CourseDetail", { courseId: course.id })
-              }
-            >
-              <Card style={styles.courseCard}>
-                <LinearGradient
-                  colors={[course.color, `${course.color}80`]}
-                  style={styles.courseCardGradient}
-                >
-                  <Ionicons name="code-slash" size={40} color="white" />
-                </LinearGradient>
-
-                <Card.Content style={styles.courseContent}>
-                  <Chip
-                    mode="outlined"
-                    textStyle={styles.chipText}
-                    style={[styles.levelChip, { borderColor: course.color }]}
-                  >
-                    {course.level}
-                  </Chip>
-
-                  <Text style={styles.courseTitle}>{course.title}</Text>
-                  <Text style={styles.courseDescription}>
-                    {course.description}
-                  </Text>
-
-                  <View style={styles.courseStats}>
-                    <View style={styles.courseStat}>
-                      <Ionicons name="people" size={16} color="#64748b" />
-                      <Text style={styles.courseStatText}>
-                        {course.students}
-                      </Text>
-                    </View>
-                    <View style={styles.courseStat}>
-                      <Ionicons name="star" size={16} color="#fbbf24" />
-                      <Text style={styles.courseStatText}>{course.rating}</Text>
-                    </View>
-                    <View style={styles.courseStat}>
-                      <Ionicons name="time" size={16} color="#64748b" />
-                      <Text style={styles.courseStatText}>
-                        {course.duration}
-                      </Text>
-                    </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* CTA Section */}
-      <LinearGradient colors={["#3b82f6", "#8b5cf6"]} style={styles.ctaSection}>
-        <Text style={styles.ctaTitle}>
-          Hemen Başlayın, Geleceğinizi Şekillendirin
-        </Text>
-        <Text style={styles.ctaDescription}>
-          Ücretsiz hesap oluşturun ve AI destekli öğrenme deneyimini keşfedin
-        </Text>
-
-        <TouchableOpacity style={styles.ctaButton}>
-          <View style={styles.ctaButtonContent}>
-            <Ionicons name="flash" size={20} color="#3b82f6" />
-            <Text style={styles.ctaButtonText}>Ücretsiz Başla</Text>
-          </View>
-        </TouchableOpacity>
-      </LinearGradient>
-    </ScrollView>
+      {/* Floating Action Button */}
+      <FloatingActionButton
+        icon="add"
+        onPress={() => navigation.navigate("Exercises")}
+        colors={["#10b981", "#059669"]}
+      />
+    </View>
   );
 };
 
@@ -273,269 +342,257 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#030712",
   },
-  headerGradient: {
-    paddingTop: 20,
-    paddingBottom: 40,
+  scrollView: {
+    flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  scrollContent: {
+    paddingBottom: 100,
+  },
+  heroSection: {
+    height: height * 0.45,
+    justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    paddingBottom: 20,
   },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  logoGradient: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
+  heroGradient: {
+    flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
-  logoText: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#f9fafb",
-    marginLeft: 12,
-  },
-  notificationButton: {
-    padding: 8,
-  },
-  heroSection: {
-    paddingHorizontal: 20,
+  heroContent: {
     alignItems: "center",
+    textAlign: "center",
   },
   heroTitle: {
     fontSize: 32,
-    fontWeight: "700",
-    color: "#f9fafb",
+    fontWeight: "800",
+    color: "#ffffff",
     textAlign: "center",
     marginBottom: 16,
     lineHeight: 40,
   },
-  heroTitleGradient: {
+  heroTitleHighlight: {
     color: "#3b82f6",
   },
-  heroDescription: {
+  heroSubtitle: {
     fontSize: 16,
-    color: "#94a3b8",
+    color: "#9ca3af",
     textAlign: "center",
     marginBottom: 32,
     lineHeight: 24,
     paddingHorizontal: 20,
   },
-  heroButtons: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  primaryButton: {
-    borderRadius: 12,
+  heroButton: {
+    borderRadius: 30,
     overflow: "hidden",
+    shadowColor: "#3b82f6",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
-  buttonGradient: {
+  heroButtonGradient: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 14,
+    paddingHorizontal: 32,
+    paddingVertical: 16,
     gap: 8,
   },
-  primaryButtonText: {
+  heroButtonText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "white",
   },
-  secondaryButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#3b82f6",
-    gap: 8,
-  },
-  secondaryButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#3b82f6",
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  statsSection: {
     paddingHorizontal: 20,
-    paddingVertical: 24,
-    marginTop: -20,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#0f172a",
-    marginHorizontal: 4,
-    paddingVertical: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  statIconContainer: {
-    marginBottom: 8,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#f9fafb",
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: "#64748b",
-    textAlign: "center",
-  },
-  section: {
-    paddingHorizontal: 20,
-    paddingVertical: 32,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
+    marginTop: 20,
   },
   sectionTitle: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#f9fafb",
-    marginBottom: 8,
+    color: "#ffffff",
+    marginBottom: 20,
   },
-  sectionDescription: {
-    fontSize: 16,
-    color: "#64748b",
-    lineHeight: 24,
-    marginBottom: 24,
+  statsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
   },
-  seeAllText: {
-    fontSize: 16,
-    color: "#3b82f6",
-    fontWeight: "600",
+  statCard: {
+    flex: 1,
+    minWidth: (width - 56) / 2,
+    padding: 20,
+  },
+  statContent: {
+    alignItems: "center",
+  },
+  statIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#ffffff",
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: "#9ca3af",
+    textAlign: "center",
+  },
+  featuresSection: {
+    paddingHorizontal: 20,
+    marginTop: 40,
   },
   featuresGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 16,
   },
   featureCard: {
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  featureContent: {
+    flex: 1,
+    minWidth: (width - 56) / 2,
     padding: 20,
   },
-  featureIconContainer: {
-    width: 48,
-    height: 48,
-    backgroundColor: "#1e293b",
-    borderRadius: 12,
+  featureContent: {
+    alignItems: "center",
+  },
+  featureIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
   },
   featureTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#f9fafb",
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#ffffff",
+    textAlign: "center",
     marginBottom: 8,
   },
   featureDescription: {
-    fontSize: 14,
-    color: "#64748b",
-    lineHeight: 20,
+    fontSize: 12,
+    color: "#9ca3af",
+    textAlign: "center",
+    lineHeight: 18,
   },
-  coursesScrollView: {
-    paddingLeft: 0,
+  coursesSection: {
+    marginTop: 40,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: "#3b82f6",
+    fontWeight: "600",
+  },
+  coursesScrollContent: {
+    paddingHorizontal: 20,
+    gap: 16,
   },
   courseCard: {
-    width: width * 0.7,
-    marginRight: 16,
-    backgroundColor: "#0f172a",
-    borderWidth: 1,
-    borderColor: "#334155",
+    width: width * 0.8,
+    overflow: "hidden",
   },
-  courseCardGradient: {
-    height: 120,
-    justifyContent: "center",
+  courseHeader: {
+    padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  courseContent: {
-    padding: 16,
+  courseLevel: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
   },
-  levelChip: {
-    alignSelf: "flex-start",
-    marginBottom: 12,
-  },
-  chipText: {
+  courseLevelText: {
     fontSize: 12,
-    color: "#f9fafb",
+    fontWeight: "600",
+    color: "white",
+  },
+  courseRating: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "white",
+  },
+  courseContent: {
+    padding: 20,
   },
   courseTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#f9fafb",
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#ffffff",
     marginBottom: 8,
   },
   courseDescription: {
     fontSize: 14,
-    color: "#64748b",
+    color: "#9ca3af",
+    marginBottom: 16,
     lineHeight: 20,
+  },
+  courseInfo: {
+    flexDirection: "row",
+    gap: 16,
     marginBottom: 16,
   },
-  courseStats: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  courseStat: {
+  courseDetail: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  courseStatText: {
+  courseDetailText: {
     fontSize: 12,
-    color: "#64748b",
+    color: "#9ca3af",
   },
   ctaSection: {
-    margin: 20,
+    marginHorizontal: 20,
+    marginTop: 40,
+    overflow: "hidden",
+  },
+  ctaGradient: {
     padding: 32,
-    borderRadius: 16,
     alignItems: "center",
   },
   ctaTitle: {
     fontSize: 24,
-    fontWeight: "700",
+    fontWeight: "800",
     color: "white",
     textAlign: "center",
     marginBottom: 12,
   },
-  ctaDescription: {
+  ctaSubtitle: {
     fontSize: 16,
-    color: "rgba(255, 255, 255, 0.8)",
+    color: "rgba(255, 255, 255, 0.9)",
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 24,
   },
   ctaButton: {
     backgroundColor: "white",
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 12,
-  },
-  ctaButtonContent: {
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 24,
     gap: 8,
   },
   ctaButtonText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "700",
     color: "#3b82f6",
   },
 });
