@@ -5,14 +5,15 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   KeyboardAvoidingView,
   Platform,
   Dimensions,
 } from "react-native";
+import { TextInput, Button, Card, Chip } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
-import { Card, Chip, Avatar } from "react-native-paper";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
+import LanguageSwitch from "../components/common/LanguageSwitch";
 
 const { height } = Dimensions.get("window");
 
