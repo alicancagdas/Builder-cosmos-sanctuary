@@ -268,17 +268,17 @@ const HomeScreen = () => {
 
       {/* CTA Section */}
       <LinearGradient colors={["#3b82f6", "#8b5cf6"]} style={styles.ctaSection}>
-        <Text style={styles.ctaTitle}>
-          Hemen Başlayın, Geleceğinizi Şekillendirin
-        </Text>
+        <Text style={styles.ctaTitle}>{t("home.joinCommunity.title")}</Text>
         <Text style={styles.ctaDescription}>
-          Ücretsiz hesap oluşturun ve AI destekli öğrenme deneyimini keşfedin
+          {t("home.joinCommunity.description")}
         </Text>
 
         <TouchableOpacity style={styles.ctaButton}>
           <View style={styles.ctaButtonContent}>
             <Ionicons name="flash" size={20} color="#3b82f6" />
-            <Text style={styles.ctaButtonText}>Ücretsiz Başla</Text>
+            <Text style={styles.ctaButtonText}>
+              {t("home.joinCommunity.join")}
+            </Text>
           </View>
         </TouchableOpacity>
       </LinearGradient>
