@@ -161,10 +161,14 @@ const HomeScreen = () => {
 
       {/* Features Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Neden CodeMentor AI?</Text>
+        <Text style={styles.sectionTitle}>
+          {t("home.features.title", "Neden CodeMentor AI?")}
+        </Text>
         <Text style={styles.sectionDescription}>
-          Modern teknoloji ile geleneksel öğrenme yöntemlerini birleştirerek
-          size en iyi deneyimi sunuyoruz
+          {t(
+            "home.features.description",
+            "Modern teknoloji ile geleneksel öğrenme yöntemlerini birleştirerek size en iyi deneyimi sunuyoruz",
+          )}
         </Text>
 
         <View style={styles.featuresGrid}>
@@ -191,9 +195,15 @@ const HomeScreen = () => {
       {/* Popular Courses Section */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Popüler Kurslar</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Kurslar")}>
-            <Text style={styles.seeAllText}>Tümünü Gör</Text>
+          <Text style={styles.sectionTitle}>
+            {t("home.popularCourses.title")}
+          </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(t("navigation.courses"))}
+          >
+            <Text style={styles.seeAllText}>
+              {t("common.all", "Tümünü Gör")}
+            </Text>
           </TouchableOpacity>
         </View>
 
