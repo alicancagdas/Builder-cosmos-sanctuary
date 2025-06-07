@@ -46,56 +46,34 @@ const AIChatScreen = () => {
   const scrollViewRef = useRef<ScrollView>(null);
 
   const suggestedQuestions = [
-    t('aiChat.examples.pointers'),
-    t('aiChat.examples.classes'),
-    t('aiChat.examples.memory'),
-    t('aiChat.examples.debugging'),
-    t('aiChat.examples.virtual', "Virtual function ne işe yarar?"),
-    t('aiChat.examples.stl', "STL vector nasıl kullanılır?"),
+    t("aiChat.examples.pointers"),
+    t("aiChat.examples.classes"),
+    t("aiChat.examples.memory"),
+    t("aiChat.examples.debugging"),
+    t("aiChat.examples.virtual", "Virtual function ne işe yarar?"),
+    t("aiChat.examples.stl", "STL vector nasıl kullanılır?"),
   ];
 
   const quickActions = [
     {
       icon: "code-slash",
-      label: t('aiChat.quickActions.explainCode', "Kod Açıkla"),
-      description: t('aiChat.examples.debugging'),
+      label: t("aiChat.quickActions.explainCode", "Kod Açıkla"),
+      description: t("aiChat.examples.debugging"),
     },
     {
       icon: "help-circle",
-      label: t('aiChat.quickActions.askQuestion', "Soru Sor"),
-      description: t('aiChat.examples.pointers'),
+      label: t("aiChat.quickActions.askQuestion", "Soru Sor"),
+      description: t("aiChat.examples.pointers"),
     },
     {
       icon: "book",
-      label: t('aiChat.quickActions.concept', "Kavram Öğren"),
-      description: t('aiChat.examples.classes'),
+      label: t("aiChat.quickActions.concept", "Kavram Öğren"),
+      description: t("aiChat.examples.classes"),
     },
     {
       icon: "bug",
-      label: t('aiChat.quickActions.debug', "Hata Bul"),
-      description: t('aiChat.examples.memory'),
-  ];
-
-  const quickActions = [
-    {
-      icon: "code-slash",
-      label: "Kod İncele",
-      description: "Kod parçanızı analiz ettirin",
-    },
-    {
-      icon: "bulb",
-      label: "Problem Çöz",
-      description: "Algoritma probleminde yardım alın",
-    },
-    {
-      icon: "book",
-      label: "Konu Açıkla",
-      description: "Bir konuyu detaylı öğrenin",
-    },
-    {
-      icon: "bug",
-      label: "Hata Bul",
-      description: "Kodunuzdaki hatayı tespit edin",
+      label: t("aiChat.quickActions.debug", "Hata Bul"),
+      description: t("aiChat.examples.memory"),
     },
   ];
 
@@ -292,7 +270,9 @@ const AIChatScreen = () => {
               <Text style={styles.headerTitle}>CodeMentor AI</Text>
               <View style={styles.statusContainer}>
                 <View style={styles.onlineIndicator} />
-                <Text style={styles.statusText}>{t('aiChat.online', 'Çevrimiçi')}</Text>
+                <Text style={styles.statusText}>
+                  {t("aiChat.online", "Çevrimiçi")}
+                </Text>
               </View>
             </View>
           </View>
