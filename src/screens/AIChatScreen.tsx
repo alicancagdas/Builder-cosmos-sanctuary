@@ -33,7 +33,7 @@ const AIChatScreen = () => {
       id: "1",
       content: t(
         "aiChat.welcome",
-        "Merhaba! Ben CodeMentor AI. C ve C++ hakk��nda her türlü sorunuzu cevaplayabilirim. Size nasıl yardımcı olabilirim?",
+        "Merhaba! Ben CodeMentor AI. C ve C++ hakkında her türlü sorunuzu cevaplayabilirim. Size nasıl yardımcı olabilirim?",
       ),
       sender: "ai",
       timestamp: new Date(),
@@ -305,7 +305,9 @@ const AIChatScreen = () => {
       {/* Suggested Questions */}
       {messages.length === 1 && (
         <View style={styles.suggestedSection}>
-          <Text style={styles.suggestedTitle}>{t('aiChat.examples.title')}</Text>
+          <Text style={styles.suggestedTitle}>
+            {t("aiChat.examples.title")}
+          </Text>
           <View style={styles.suggestedContainer}>
             {suggestedQuestions.slice(0, 3).map((question, index) => (
               <TouchableOpacity
@@ -332,7 +334,7 @@ const AIChatScreen = () => {
           <View style={styles.typingContainer}>
             <Avatar.Icon size={32} icon="robot" style={styles.aiAvatar} />
             <View style={styles.typingBubble}>
-              <Text style={styles.typingText}>{t('aiChat.typing')}</Text>
+              <Text style={styles.typingText}>{t("aiChat.typing")}</Text>
               <View style={styles.typingIndicator}>
                 <View style={[styles.dot, styles.dot1]} />
                 <View style={[styles.dot, styles.dot2]} />
@@ -349,7 +351,7 @@ const AIChatScreen = () => {
           style={styles.textInput}
           value={inputMessage}
           onChangeText={setInputMessage}
-          placeholder={t('aiChat.placeholder')}
+          placeholder={t("aiChat.placeholder")}
           placeholderTextColor="#64748b"
           multiline
           maxLength={500}
@@ -369,7 +371,6 @@ const AIChatScreen = () => {
           />
         </TouchableOpacity>
       </View>
-      )}
 
       {/* Messages */}
       <ScrollView
@@ -399,7 +400,7 @@ const AIChatScreen = () => {
         <View style={styles.inputRow}>
           <TextInput
             style={styles.textInput}
-            placeholder={t('aiChat.placeholder')}
+            placeholder={t("aiChat.placeholder")}
             placeholderTextColor="#64748b"
             value={inputMessage}
             onChangeText={setInputMessage}
@@ -418,7 +419,10 @@ const AIChatScreen = () => {
           </TouchableOpacity>
         </View>
         <Text style={styles.disclaimer}>
-          {t('aiChat.disclaimer', 'AI yanıtları bilgilendirme amaçlıdır. Kritik projeler için doğrulama yapın.')}
+          {t(
+            "aiChat.disclaimer",
+            "AI yanıtları bilgilendirme amaçlıdır. Kritik projeler için doğrulama yapın.",
+          )}
         </Text>
       </View>
     </KeyboardAvoidingView>
