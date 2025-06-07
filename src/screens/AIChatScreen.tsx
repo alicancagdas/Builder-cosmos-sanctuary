@@ -174,8 +174,10 @@ const AIChatScreen = () => {
       console.error("Failed to get AI response:", error);
       const errorMessage: Message = {
         id: Date.now().toString(),
-        content:
+        content: t(
+          "aiChat.error",
           "Üzgünüm, şu anda yanıt veremiyorum. Lütfen daha sonra tekrar deneyin.",
+        ),
         sender: "ai",
         timestamp: new Date(),
         type: "text",
